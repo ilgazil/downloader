@@ -17,11 +17,11 @@ module.exports = {
      *
      * @param {string} url
      * @param {string} destination
-     * @param {Object} config
+     * @param {Object} options
      *
      * @returns {Promise}
      */
-    download (url, destination, config) {
-        return host.download(url, destination, config);
+    download (url, destination, options) {
+        return host.download(url, destination, options);
     }
 };

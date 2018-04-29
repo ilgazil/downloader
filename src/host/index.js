@@ -42,17 +42,17 @@ module.exports = {
      *
      * @param {string} url
      * @param {string} destination
-     * @param {Object} config
+     * @param {Object} options
      *
      * @returns {Promise}
      */
-    download (url, destination, config) {
+    download (url, destination, options) {
         const host = this.getHost(url);
 
         if (!host) {
             return Promise.reject('No host found for ' + url);
         }
 
-        return host.download(url, destination, config);
+        return host.download(url, destination, options);
     }
 };

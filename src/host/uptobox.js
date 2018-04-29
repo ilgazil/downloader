@@ -85,7 +85,7 @@ module.exports = {
      * @return {boolean}
      */
     match (url) {
-        return url.indexOf('http://uptobox.com') === 0;
+        return url.indexOf('//uptobox.com/') > -1;
     },
 
     /**
@@ -128,15 +128,14 @@ module.exports = {
      *
      * @param {string} url
      * @param {string} destination
-     * @param {Object} config
+     * @param {Object} options
      *
      * @returns {Promise}
      */
-    download (url, destination, config) {
-
-        return downloadInfo(url, config)
+    download (url, destination, options) {
+        return downloadInfo(url, options.config)
             .then(({ url, name }) => {
-                return downloader.http(url, destination + '/' + name);
+                return downloader.http(url, destination + '/' + name, options.onStarted);
             })
     }
 };

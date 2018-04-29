@@ -33,13 +33,13 @@ module.exports = {
      *
      * @param {string} url
      * @param {string} destination
-     * @param {Object} config
+     * @param {Object} options
      *
      * @returns {Promise}
      *
      * @todo Get a name from url
      */
-    download (url, destination, config) {
+    download (url, destination, options) {
         return Promise.resolve(downloader.http(url, destination + '/download-' + (new Date()).getTime()))
     }
 };

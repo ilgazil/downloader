@@ -34,9 +34,11 @@ oyster
     'https://uptobox.com/somerandomhash', 
     '/home/user/dl',
     {
-      premium: {
-        login: 'premiumuser',
-        password: 'premiumpass'
+      config: {
+        premium: {
+          login: 'premiumuser',
+          password: 'premiumpass'
+        }
       }
     }
   )
