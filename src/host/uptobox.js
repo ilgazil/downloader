@@ -3,7 +3,7 @@ const humanFormat = require('human-format');
 const request = require('request-promise-native');
 const winston = require('winston');
 
-const downloader = require('../downloader/index');
+const download = require('../download');
 
 const processes = [];
 
@@ -38,7 +38,7 @@ function downloadInfo (url, config) {
         const process = {
             url: url,
             request: request(options)
-                .then((response) => {
+                .then(() => {
                     const options = {
                         method: 'GET',
                         url: url,
@@ -135,7 +135,10 @@ module.exports = {
     download (url, destination, options) {
         return downloadInfo(url, options.config)
             .then(({ url, name }) => {
-                return downloader.http(url, destination + '/' + name, options.onStarted);
-            })
+                return {
+                    target: destination + '/' + name,
+                    stream: download(url, destination + '/' + name)
+                };
+            });
     }
 };

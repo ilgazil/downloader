@@ -1,4 +1,4 @@
-const downloader = require('../downloader/index');
+const download = require('../download');
 
 module.exports = {
     name: 'default',
@@ -37,9 +37,12 @@ module.exports = {
      *
      * @returns {Promise}
      *
-     * @todo Get a name from url
+     * @todo How to get name?
      */
     download (url, destination, options) {
-        return Promise.resolve(downloader.http(url, destination + '/download-' + (new Date()).getTime()))
+        return Promise.resolve({
+            target: destination + '/foo',
+            stream: download(url, destination + '/foo')
+        });
     }
 };
