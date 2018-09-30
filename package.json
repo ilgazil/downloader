@@ -1,6 +1,6 @@
 {
   "name": "oyster",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "File hosted download manager",
   "main": "server.js",
   "scripts": {
@@ -11,14 +11,14 @@
   "dependencies": {
     "chai": "^4.1.2",
     "cheerio": "^1.0.0-rc.2",
-    "commander": "^2.15.1",
-    "download": "^7.0.0",
+    "commander": "^2.18.0",
+    "download": "^7.1.0",
     "human-format": "^0.10.0",
     "mocha": "^5.2.0",
-    "request": "^2.86.0",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "valid-url": "^1.0.9",
-    "winston": "^2.4.2"
+    "winston": "^2.4.4"
   },
   "devDependencies": {}
 }

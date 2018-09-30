@@ -5,72 +5,73 @@ const winston = require('winston');
 
 const download = require('../download');
 
+const CredentialsError = require('../errors/CredentialsError');
+const CooldownError = require('../errors/CooldownError');
+const FileNotFoundError = require('../errors/FileNotFoundError');
+const HostServerError = require('../errors/HostServerError');
+
 const processes = [];
 
 /**
- * Get the file real url and name
+ * Parse link page for name, size and errors
  *
- * @param {string} url
- * @param {Object} config
- *
- * @returns {Promise}
- * 
- * @todo Do not impose premium account
- * @todo See how to handle sessions
+ * @param {Function} $
+ * @returns {Object}
  */
-function downloadInfo (url, config) {
-    if (!config || !config.premium) {
-        return Promise.reject('Only premium users can download on this host');
+function parse ($) {
+    const title = $('#dl h1').text();
+
+    if (title.includes('File not found')) {
+        throw new FileNotFoundError();
     }
 
-    const options = {
+    if (title.includes('Bad gateway')) {
+        throw new HostServerError();
+    }
+
+    const $error = $('#dl + .red');
+
+    if ($error.length) {
+        throw new HostError($error.text());
+    }
+
+    const name = title.substring(0, title.lastIndexOf(' ('));
+    let size = title.substring(title.lastIndexOf('(') + 1, title.lastIndexOf(')'));
+
+    return {
+        $,
+        analyse: {
+            name,
+            size: humanFormat.parse(size)
+        }
+    };
+}
+
+/**
+ * Login to host if credentials are given
+ *
+ * @param {Object} [config]
+ * @param {string} [config.user]
+ * @param {string} [config.password]
+ *
+ * @returns {Promise}
+ */
+function login ({ user, password }) {
+    if (!user) {
+        return Promise.resolve();
+    }
+
+    return request({
         method: 'POST',
         url: 'https://uptobox.com/?op=login',
         jar: true,
         followAllRedirects: true,
         formData: {
-            'login': config.premium.login,
-            'password': config.premium.password
+            login: user,
+            password
         }
-    };
-
-    return new Promise((resolve, reject) => {
-        const process = {
-            url: url,
-            request: request(options)
-                .then(() => {
-                    const options = {
-                        method: 'GET',
-                        url: url,
-                        jar: true,
-                        transform: body => {
-                            return cheerio.load(body);
-                        }
-                    };
-
-                    process.request = request(options)
-                        .then($ => {
-                            const url = $('#dl a.big-button-green-flat').attr('href');
-
-                            if (!url) {
-                                throw 'Unable to find link in page';
-                            }
-
-                            const title = $('#dl h1').text();
-                            const size = title.substring(title.lastIndexOf('(') + 1, title.lastIndexOf(')'));
-
-                            resolve({
-                                url,
-                                name : decodeURIComponent(url.substr(url.lastIndexOf('/') + 1)),
-                                size: humanFormat.parse(size)
-                            });
-                        })
-                        .catch(error => reject(error));
-                })
-                .catch(error => reject(error))
-        };
-
-        processes.push(process);
+    }).catch(error => {
+        throw new CredentialsError(user, password, error);
     });
 }
 
@@ -85,7 +86,7 @@ module.exports = {
      * @return {boolean}
      */
     match (url) {
-        return url.indexOf('//uptobox.com/') > -1;
+        return url.indexOf('//uptobox.com/') > 0;
     },
 
     /**
@@ -107,19 +108,12 @@ module.exports = {
         winston.debug('Analysing ' + url);
 
         return request(options)
-            .then($ => {
-                const title = $('#dl h1').text();
-
-                const name = title.substring(0, title.lastIndexOf(' ('));
-                let size = title.substring(title.lastIndexOf('(') + 1, title.lastIndexOf(')'));
-
-                return {
-                    name,
-                    size: humanFormat.parse(size)
-                };
-            })
+            .then(parse)
+            .then(({ analyse }) => analyse)
             .catch(error => {
-                winston.error(error);
+                error.path = url;
+
+                throw error;
             });
     },
 
@@ -131,14 +125,79 @@ module.exports = {
      * @param {Object} options
      *
      * @returns {Promise}
+     *
+     * @todo See how to handle sessions
      */
     download (url, destination, options) {
-        return downloadInfo(url, options.config)
-            .then(({ url, name }) => {
-                return {
-                    target: destination + '/' + name,
-                    stream: download(url, destination + '/' + name)
-                };
-            });
+        return new Promise((resolve, reject) => {
+            const process = {
+                url: url,
+                request: login(options.premium || {})
+                    .then(() => {
+                        process.request = request({
+                            method: 'GET',
+                            url: url,
+                            jar: true,
+                            transform: body => {
+                                return cheerio.load(body);
+                            }
+                        })
+                            .then(parse)
+                            .then(({ $, analyse }) => {
+                                const $link = $('#dl a.big-button-green-flat');
+
+                                if ($link.hasClass('disabled')) {
+                                    const cooldown = /[^\d]+(\d+\sh[^\d]+)?(\d+\smin[^\d]+)?(\d+\ssec)?/
+                                        .exec($link.siblings('div.countdown').text())
+                                        .reduce((reduced, current) => {
+                                            if (!current || current === $link.siblings('div.countdown').text()) {
+                                                return reduced;
+                                            }
+
+                                            if (current.includes('h')) {
+                                                reduced.hours = parseInt(current);
+                                            } else if (current.includes('min')) {
+                                                reduced.minutes = parseInt(current);
+                                            } else if (current.includes('sec')) {
+                                                reduced.seconds = parseInt(current);
+                                            }
+
+                                            return reduced;
+                                        }, {})
+                                    ;
+
+                                    throw new CooldownError(cooldown);
+                                }
+
+                                const url = $link.attr('href');
+
+                                if (!url) {
+                                    throw 'Unable to find link in page';
+                                }
+
+                                resolve({
+                                    ...analyse,
+                                    url
+                                });
+                            })
+                            .catch(error => {
+                                error.path = url;
+                                reject(error);
+                            });
+                    })
+                    .catch(error => {
+                        error.path = url;
+                        reject(error);
+                    })
+            };
+
+            processes.push(process);
+        })
+        .then(({ url, name }) => {
+            return {
+                target: destination + '/' + name,
+                stream: download(url, destination + '/' + name)
+            };
+        });
     }
 };

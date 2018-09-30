@@ -29,12 +29,13 @@ module.exports = {
             return Promise.reject('No host found for ' + url);
         }
 
-        return host.analyse(url).then(analyse => {
-            return {
-                host: host.name,
-                ...analyse
-            }
-        });
+        return host.analyse(url)
+            .then(analyse => {
+                return {
+                    host: host.name,
+                    ...analyse
+                }
+            });
     },
 
     /**

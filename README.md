@@ -3,6 +3,8 @@
 Analyse urls and retrieve actual file download url from supported hosts (listed below).
 If url does not match any host, oyster will try to download the url directly.
 
+**Note: This project is still in development and is not fully ready. API signature can still change!**
+
 ## Install
 
 NPM
@@ -21,8 +23,8 @@ oyster
   .analyse('https://uptobox.com/somerandomhash')
   .then(analyse => {
     console.log(analyse.host) // uptobox
-    console.log(analyse.name) // Prints My.Winter.Holidays.Video
-    console.log(analyse.size) // Prints 365220000
+    console.log(analyse.name) // My.Winter.Holidays.Video
+    console.log(analyse.size) // 365220000
   })
 ```
 
@@ -34,11 +36,9 @@ oyster
     'https://uptobox.com/somerandomhash', 
     '/home/user/dl',
     {
-      config: {
-        premium: {
-          login: 'premiumuser',
-          password: 'premiumpass'
-        }
+      premium: {
+        user: 'premiumuser',
+        password: 'premiumpass'
       }
     }
   )
