@@ -1,7 +1,9 @@
 const cheerio = require('cheerio');
+const { URLSearchParams } = require('url');
 const humanFormat = require('human-format');
 const request = require('request-promise-native');
 const winston = require('winston');
+const fetch = require('node-fetch');
 
 const download = require('../download');
 
@@ -48,30 +50,46 @@ function parse ($) {
 }
 
 /**
- * Login to host if credentials are given
- *
- * @param {Object} [config]
- * @param {string} [config.user]
- * @param {string} [config.password]
+ * @param {Object} config
+ * @param {string} config.user
+ * @param {string} config.password
  *
  * @returns {Promise}
  */
-function login ({ user, password }) {
-    if (!user) {
-        return Promise.resolve();
-    }
+function login ({ user, password }, url) {
+    const hash = url.substr(url.lastIndexOf('/') + 1);
 
-    return request({
-        method: 'POST',
-        url: 'https://uptobox.com/?op=login',
-        jar: true,
-        followAllRedirects: true,
-        formData: {
-            login: user,
-            password
+    console.log('https://uptobox.com/login?referer=' + hash, 'login=' + user + '&password=' + password);
+
+
+    const params = new URLSearchParams();
+    params.append('login', user);
+    params.append('password', password);
+
+    return fetch(
+        'https://uptobox.com/login?referer=' + hash,
+        {
+            method: 'POST',
+            body: params,
+            redirect: 'manual',
         }
-    }).catch(error => {
-        throw new CredentialsError(user, password, error);
+    ).then((response) => {
+        if (response.status !== 302) {
+            throw new CredentialsError(user, password);
+        }
+
+        const cookies = response.headers.raw()['set-cookie'].reduce((cookies, cookie) => {
+            cookies[cookie.substr(0, cookie.indexOf('='))] = cookie.substring(cookie.indexOf('=') + 1, cookie.indexOf(';'));
+            return cookies;
+        }, {});
+
+        return fetch(
+            url,
+            {
+                method: 'GET',
+                headers: { 'Cookie': Object.keys(cookies).map((name) => name + '=' + cookies[name]).join('; ') },
+            }
+        ).then((response) => response.url);
     });
 }
 
@@ -129,61 +147,21 @@ module.exports = {
      * @todo See how to handle sessions
      */
     download (url, destination, options) {
-        return new Promise((resolve, reject) => {
+        return (new Promise((resolve, reject) => {
+            if (!options.premium) {
+                reject('Only premium is supported');
+                return;
+            }
+
             const process = {
                 url: url,
-                request: login(options.premium || {})
-                    .then(() => {
-                        process.request = request({
-                            method: 'GET',
-                            url: url,
-                            jar: true,
-                            transform: body => {
-                                return cheerio.load(body);
-                            }
-                        })
-                            .then(parse)
-                            .then(({ $, analyse }) => {
-                                const $link = $('#dl a.big-button-green-flat');
-
-                                if ($link.hasClass('disabled')) {
-                                    const cooldown = /[^\d]+(\d+\sh[^\d]+)?(\d+\smin[^\d]+)?(\d+\ssec)?/
-                                        .exec($link.siblings('div.countdown').text())
-                                        .reduce((reduced, current) => {
-                                            if (!current || current === $link.siblings('div.countdown').text()) {
-                                                return reduced;
-                                            }
-
-                                            if (current.includes('h')) {
-                                                reduced.hours = parseInt(current);
-                                            } else if (current.includes('min')) {
-                                                reduced.minutes = parseInt(current);
-                                            } else if (current.includes('sec')) {
-                                                reduced.seconds = parseInt(current);
-                                            }
-
-                                            return reduced;
-                                        }, {})
-                                    ;
-
-                                    throw new CooldownError(cooldown);
-                                }
-
-                                const url = $link.attr('href');
-
-                                if (!url) {
-                                    throw 'Unable to find link in page';
-                                }
-
-                                resolve({
-                                    ...analyse,
-                                    url
-                                });
-                            })
-                            .catch(error => {
-                                error.path = url;
-                                reject(error);
-                            });
+                request: login(options.premium || {}, url)
+                    .then((url) => {
+                        resolve({
+                            name: url.substr(url.lastIndexOf('/') + 1),
+                            size: 0,
+                            url
+                        });
                     })
                     .catch(error => {
                         error.path = url;
@@ -192,8 +170,64 @@ module.exports = {
             };
 
             processes.push(process);
-        })
+
+            // Regular user part (not premium)
+            // process.request = request({
+            //     method: 'GET',
+            //     url: url,
+            //     jar: true,
+            //     transform: body => {
+            //         return cheerio.load(body);
+            //     }
+            // })
+            //     .then(($) => {
+            //
+            //     })
+            //     .then(parse)
+            //     .then(({ $, analyse }) => {
+            //         const $link = $('#dl a.big-button-green-flat');
+            //
+            //         if ($link.hasClass('disabled')) {
+            //             const cooldown = /[^\d]+(\d+\sh[^\d]+)?(\d+\smin[^\d]+)?(\d+\ssec)?/
+            //                 .exec($link.siblings('div.countdown').text())
+            //                 .reduce((reduced, current) => {
+            //                     if (!current || current === $link.siblings('div.countdown').text()) {
+            //                         return reduced;
+            //                     }
+            //
+            //                     if (current.includes('h')) {
+            //                         reduced.hours = parseInt(current);
+            //                     } else if (current.includes('min')) {
+            //                         reduced.minutes = parseInt(current);
+            //                     } else if (current.includes('sec')) {
+            //                         reduced.seconds = parseInt(current);
+            //                     }
+            //
+            //                     return reduced;
+            //                 }, {})
+            //             ;
+            //
+            //             throw new CooldownError(cooldown);
+            //         }
+            //
+            //         const url = $link.attr('href');
+            //
+            //         if (!url) {
+            //             throw 'Unable to find link in page';
+            //         }
+            //
+            //         resolve({
+            //             ...analyse,
+            //             url
+            //         });
+            //     })
+            //     .catch(error => {
+            //         error.path = url;
+            //         reject(error);
+            //     });
+        }))
         .then(({ url, name }) => {
+            console.log('processing download of ' + url);
             return {
                 target: destination + '/' + name,
                 stream: download(url, destination + '/' + name)
