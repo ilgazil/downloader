@@ -6,7 +6,7 @@ const humanFormat = require('human-format');
 const urlValidator = require('valid-url');
 const winston = require('winston');
 
-const lib = require('./index');
+const lib = require('./dist/host');
 
 /**
  * Get urls from text file (space-like chars separated) if path is given
@@ -51,7 +51,7 @@ program
 
             winston.info('Analysing ' + url);
 
-            lib.analyse(url)
+            lib.info(url)
                 .then(result => {
                     winston.info(result);
 

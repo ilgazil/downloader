@@ -1,27 +1,30 @@
 {
   "name": "oyster",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "File hosted download manager",
-  "main": "server.js",
+  "repository": "https://github.com/ilgazil/oyster",
+  "main": "dist/src/index.js",
   "scripts": {
-    "test": "jest"
+    "build": "tsc",
+    "test": "jest --testRegex='(src/.*\\.spec)\\.ts$'"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "commander": "^2.20.1",
-    "download": "^7.1.0",
-    "human-format": "^0.10.1",
-    "node-fetch": "^2.6.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.7",
-    "valid-url": "^1.0.9",
-    "winston": "^2.4.4"
+    "axios": "^0.19.1",
+    "cookie": "^0.4.0",
+    "htmlparser2": "^4.0.0",
+    "neverthrow": "^2.1.1"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
+    "@types/cookie": "^0.3.3",
+    "@types/jest": "^24.0.25",
+    "@types/supertest": "^2.0.8",
+    "axios-mock-adapter": "^1.17.0",
     "jest": "^24.9.0",
-    "mocha": "^5.2.0"
+    "moment": "^2.24.0",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.4"
   }
 }
