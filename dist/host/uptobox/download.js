@@ -20,7 +20,8 @@ const LoginError_1 = __importDefault(require("../../errors/LoginError"));
 const ServerError_1 = __importDefault(require("../../errors/ServerError"));
 function download(url, options) {
     return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-        if (!options.credentials) {
+        var _a;
+        if (!((_a = options) === null || _a === void 0 ? void 0 : _a.credentials)) {
             return resolve(neverthrow_1.err(new LoginError_1.default('Downloading as a guest is not supported')));
         }
         const auth = yield auth_1.authenticate(options.credentials);
@@ -34,8 +35,8 @@ function download(url, options) {
         return axios_1.default
             .get(url, { responseType: 'stream', headers })
             .then((response) => {
-            console.log(response.headers['Content-Length']);
-            response.data.pipe(fs_1.default.createWriteStream(options.target));
+            var _a;
+            response.data.pipe(fs_1.default.createWriteStream(((_a = options) === null || _a === void 0 ? void 0 : _a.target) || './download'));
             resolve(neverthrow_1.ok(response.data));
         })
             .catch((e) => resolve(neverthrow_1.err(new ServerError_1.default(`Unable to access file: ${e.message}`))));

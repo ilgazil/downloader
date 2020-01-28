@@ -25,10 +25,18 @@ const InvalidArgumentError_1 = __importDefault(require("../errors/InvalidArgumen
 const hosts = [
     uptobox,
 ];
+function use(host) {
+    const hostIndex = hosts.findIndex((installedHost) => host.identifier === installedHost.identifier);
+    if (hostIndex > -1) {
+        hosts.splice(hostIndex, 1);
+    }
+    hosts.unshift(host);
+}
+exports.use = use;
 function getHost(url) {
     const matchingHost = hosts.find((host) => host.match(url));
     if (!matchingHost) {
-        return neverthrow_1.err(`No matching host for url ${url}`);
+        return neverthrow_1.err(new InvalidArgumentError_1.default(`No matching host for url ${url}`));
     }
     return neverthrow_1.ok(matchingHost.identifier);
 }

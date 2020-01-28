@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "File hosted download manager",
   "repository": "https://github.com/ilgazil/oyster",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "test": "jest --testRegex='(src/.*\\.spec)\\.ts$'",
