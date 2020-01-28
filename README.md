@@ -1,5 +1,7 @@
 # oyster
 
+![Build on Travis CI](https://travis-ci.org/ilgazil/oyster.svg?branch=master)
+
 Analyse urls and retrieve actual file download url from supported hosts (listed below).
 
 **Note: This project is still in development and is not fully ready. API signature can still change!**
