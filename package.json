@@ -6,7 +6,8 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest --testRegex='(src/.*\\.spec)\\.ts$'"
+    "test": "jest --testRegex='(src/.*\\.spec)\\.ts$'",
+    "test-coverage": "jest --coverage --testRegex='(src/.*\\.spec)\\.ts$'"
   },
   "author": "",
   "license": "MIT",

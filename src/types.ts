@@ -5,7 +5,7 @@ export interface Host {
   identifier: string;
   match(url: string): boolean,
   info(url: string): Promise<InfoResult>,
-  download(url: string, options: DownloadOptions): Promise<DownloadResult>,
+  download(url: string, options?: DownloadOptions): Promise<DownloadResult>,
 }
 
 export interface Credentials {
@@ -15,7 +15,7 @@ export interface Credentials {
 
 export interface DownloadOptions {
   credentials?: Credentials;
-  target: string;
+  target?: string;
 }
 
 export interface Stream<T> extends Promise<T> {

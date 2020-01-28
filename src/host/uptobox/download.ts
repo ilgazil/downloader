@@ -6,9 +6,9 @@ import LoginError from '../../errors/LoginError';
 import ServerError from '../../errors/ServerError';
 import { Auth, DownloadOptions, DownloadResult } from '../../types';
 
-export function download(url: string, options: DownloadOptions): Promise<DownloadResult> {
+export function download(url: string, options?: DownloadOptions): Promise<DownloadResult> {
   return new Promise<DownloadResult>(async (resolve) => {
-    if (!options.credentials) {
+    if (!options?.credentials) {
       return resolve(err(new LoginError('Downloading as a guest is not supported')));
     }
 
@@ -27,10 +27,7 @@ export function download(url: string, options: DownloadOptions): Promise<Downloa
       .get(url, { responseType: 'stream', headers })
 
       .then((response: AxiosResponse<ReadStream>) => {
-        console.log(response.headers['Content-Length']);
-
-        response.data.pipe(fs.createWriteStream(options.target));
-
+        response.data.pipe(fs.createWriteStream(options?.target || './download'));
         resolve(ok(response.data));
       })
 

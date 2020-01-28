@@ -7,11 +7,21 @@ const hosts: Host[] = [
   uptobox,
 ];
 
-export function getHost(url: string): Result<string, string> {
+export function use(host: Host): void {
+  const hostIndex = hosts.findIndex((installedHost: Host) => host.identifier === installedHost.identifier);
+
+  if (hostIndex > -1) {
+    hosts.splice(hostIndex, 1);
+  }
+
+  hosts.unshift(host);
+}
+
+export function getHost(url: string): Result<string, Error> {
   const matchingHost = hosts.find((host: Host) => host.match(url));
 
   if (!matchingHost) {
-    return err(`No matching host for url ${url}`);
+    return err(new InvalidArgumentError(`No matching host for url ${url}`));
   }
 
   return ok(matchingHost.identifier)
@@ -27,7 +37,7 @@ export async function info(url: string): Promise<InfoResult> {
   return matchingHost.info(url);
 }
 
-export async function download(url: string, options: DownloadOptions): Promise<DownloadResult> {
+export async function download(url: string, options?: DownloadOptions): Promise<DownloadResult> {
   const matchingHost = hosts.find((host: Host) => host.match(url));
 
   if (!matchingHost) {
