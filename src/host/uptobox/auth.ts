@@ -1,9 +1,10 @@
 import axios, {AxiosError} from 'axios';
 import cookie from 'cookie';
 import moment from 'moment';
-import { err, ok } from 'neverthrow';
-import { Credentials, AuthResult } from '../../types';
+import { AuthOptions, Auth } from '../../types';
 import LoginError from '../../errors/LoginError';
+import ServerError from '../../errors/ServerError';
+import InvalidArgumentError from 'src/errors/InvalidArgumentError';
 
 const LOGIN_URL: string = 'https://uptobox.com/login';
 const expirationDateFormat = 'ddd, DD-MMM-YY HH:mm:ss zz';
@@ -20,7 +21,7 @@ export function isCookieValid(definition: string): boolean {
     return moment(parts['expires'], expirationDateFormat).valueOf() > moment().valueOf();
   }
 
-  return true;
+  return false;
 }
 
 export function createCookieJar(cookies: string[]): string[] {
@@ -30,43 +31,50 @@ export function createCookieJar(cookies: string[]): string[] {
   }, {});
 }
 
-export function authenticate(credentials: Credentials): Promise<AuthResult> {
-  return new Promise<AuthResult>((resolve) => {
-    if (cachedCookies.length) {
-      if (!cachedCookies.every(isCookieValid)) {
-        return resolve(ok({
-          cookies: createCookieJar(cachedCookies),
-        }));
+export function authenticate(options?: AuthOptions): Promise<Auth> {
+  if (!options.noCache && cachedCookies.length && cachedCookies.every(isCookieValid)) {
+    return Promise.resolve({
+      cookies: createCookieJar(cachedCookies),
+    });
+  }
+
+  const body = new URLSearchParams();
+  body.append('login', options.user);
+  body.append('password', options.password);
+
+  return axios
+    .post(
+      LOGIN_URL,
+      body,
+      {
+        headers: {'Content-Type': 'application/x-www-form-urlencoded' },
+        maxRedirects: 0,
+        validateStatus(status: number): boolean {
+          return status === 302;
+        },
       }
-    }
+    )
 
-    const body = new URLSearchParams();
-    body.append('login', credentials.user);
-    body.append('password', credentials.password);
+    .then((response) => {
+      const cookies = (response.headers['set-cookie'] as string[]).filter(isCookieValid);
 
-    axios
-      .post(
-        LOGIN_URL,
-        body,
-        {
-          headers: {'Content-Type': 'application/x-www-form-urlencoded' },
-          maxRedirects: 0,
-          validateStatus(status: number): boolean {
-            return status === 302;
-          },
-        }
-      )
+      if (!options.noCache) {
+        cachedCookies = cookies;
+      }
 
-      .then((response) => {
-        cachedCookies = (response.headers['set-cookie'] as string[]).filter(isCookieValid);
+      return Promise.resolve({
+        cookies: createCookieJar(cookies),
+      });
+    })
 
-        return resolve(ok({
-          cookies: createCookieJar(cachedCookies),
-        }));
-      })
+    // @todo Add stack
+    .catch((e: AxiosError) => {
+      // @todo Refine error on searching through dom
+      if (e.response.status === 200) {
+        throw new LoginError('Invalid credentials');
+      }
 
-      // @todo handle credential errors and other errors?
-      .catch((e: AxiosError) => resolve(err(new LoginError('Invalid credentials'))))
-    ;
-  });
+      throw new ServerError('Unable to authenticate');
+    })
+  ;
 }

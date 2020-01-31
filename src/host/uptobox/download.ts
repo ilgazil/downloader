@@ -1,37 +1,35 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import fs, { ReadStream } from 'fs';
-import { ok, err } from 'neverthrow';
 import { authenticate } from './auth';
 import LoginError from '../../errors/LoginError';
 import ServerError from '../../errors/ServerError';
-import { Auth, DownloadOptions, DownloadResult } from '../../types';
+import { Auth, DownloadOptions } from '../../types';
 
-export function download(url: string, options?: DownloadOptions): Promise<DownloadResult> {
-  return new Promise<DownloadResult>(async (resolve) => {
-    if (!options?.credentials) {
-      return resolve(err(new LoginError('Downloading as a guest is not supported')));
-    }
+export function download(url: string, options?: DownloadOptions): Promise<ReadStream> {
+  if (!options?.auth) {
+    return Promise.reject(new LoginError('Downloading as a guest is not supported'));
+  }
 
-    const auth = await authenticate(options.credentials);
+  return authenticate(options.auth)
+    .then((auth: Auth) => {
+      const headers: any = {
+        Cookie: auth.cookies.join('; '),
+      };
 
-    if (auth.isErr()) {
-      return resolve(err(auth._unsafeUnwrapErr()));
-    }
+      return axios
+        .get(url, { responseType: 'stream', headers })
 
-    const headers: any = {};
-    auth.map((auth: Auth) => {
-      headers.Cookie = auth.cookies.join('; ');
-    });
+        .then((response: AxiosResponse<ReadStream>) => {
+          response.data.pipe(fs.createWriteStream(options?.target || './download'));
 
-    return axios
-      .get(url, { responseType: 'stream', headers })
+          return response.data;
+        })
 
-      .then((response: AxiosResponse<ReadStream>) => {
-        response.data.pipe(fs.createWriteStream(options?.target || './download'));
-        resolve(ok(response.data));
-      })
-
-      .catch((e: AxiosError) => resolve(err(new ServerError(`Unable to access file: ${e.message}`))))
-    ;
-  });
+        // @todo Add stack
+        .catch((e: AxiosError) => {
+          throw new ServerError('Unable to download file');
+        })
+      ;
+    })
+  ;
 }

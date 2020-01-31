@@ -1,9 +1,15 @@
 import axios, { AxiosError } from 'axios';
 import { Parser } from 'htmlparser2';
-import { Result, err, ok } from 'neverthrow';
-import { Info, InfoResult } from '../../types';
+import { Info } from '../../types';
+import ParsingError from '../../errors/ParsingError';
+import ServerError from '../../errors/ServerError';
 
-function parseFileInfo(html: string): Result<{ filename: string, size: string }, Error> {
+interface FileInfo {
+  filename: string,
+  size: string,
+}
+
+export function parseFileInfo(html: string): FileInfo | ParsingError {
   let isInTitle = false;
   const contents: string[] = [];
 
@@ -28,16 +34,16 @@ function parseFileInfo(html: string): Result<{ filename: string, size: string },
   const parse = /(.*)\s+\((\d+\.?\d*\s\w+)\)/.exec(contents.join(''));
 
   if (!parse || parse.length < 3) {
-    return err(new Error('Unable to parse page title'));
+    return new ParsingError('Title not found');
   }
 
-  return ok({
+  return {
     filename: parse[1],
     size: parse[2],
-  })
+  };
 }
 
-function parseCooldownInfo(html: string): Result<number, Error> {
+export function parseCooldownInfo(html: string): number {
   let isInSpan = false;
   const contents: string[] = [];
 
@@ -65,10 +71,10 @@ function parseCooldownInfo(html: string): Result<number, Error> {
   const parse = /you can wait\s((\d+)\sdays?\s?)?((\d+)\shours?\s?)?((\d+)\sminutes?\s?)?((\d+)\sseconds?)?/.exec(contents.join(' '));
 
   if (!parse) {
-    return ok(0);
+    return 0;
   }
 
-  return ok(
+  return (
     (~~parse[2] || 0) * 60 * 60 * 24 + // Days part
     (~~parse[4] || 0) * 60 * 60 + // Hours part
     (~~parse[6] || 0) * 60 + // Minutes part
@@ -76,33 +82,34 @@ function parseCooldownInfo(html: string): Result<number, Error> {
   );
 }
 
-export function info(url: string): Promise<InfoResult> {
-  return new Promise<InfoResult>((resolve) => {
-    axios
-      .get(url, { maxRedirects: 0 })
+export function info(url: string): Promise<Info> {
+  return axios
+    .get(url)
 
-      .then((response) => {
-        const infos: Info = {
-          url,
-          filename: '',
-          size: '',
-          cooldown: 0,
-        };
+    .then((response) => {
+      const infos: Info = {
+        url,
+        filename: '',
+        size: '',
+        cooldown: 0,
+      };
 
-        const fileInfoResult = parseFileInfo(response.data);
+      const fileInfoResult = parseFileInfo(response.data);
 
-        if (fileInfoResult.isErr()) {
-          return resolve(err(fileInfoResult._unsafeUnwrapErr()));
-        }
+      if (fileInfoResult instanceof ParsingError) {
+        throw fileInfoResult;
+      } else {
+        Object.assign(infos, fileInfoResult);
+      }
 
-        fileInfoResult.map((info) => Object.assign(infos, info));
+      infos.cooldown = parseCooldownInfo(response.data);
 
-        parseCooldownInfo(response.data).map((cooldown: number) => Object.assign(infos, { cooldown }));
+      return infos;
+    })
 
-        return resolve(ok(infos));
-      })
-
-      .catch((e: AxiosError) => resolve(err(e)))
-    ;
-  });
+    // @todo Add stack
+    .catch((e: AxiosError) => {
+      throw new ServerError('Unable to get infos');
+    })
+  ;
 }
