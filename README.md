@@ -14,21 +14,50 @@ Using npm
 npm i -S git+https://git@github.com/ilgazil/oyster.git
 ```
 
-## Usage
+## API definition
+
+### getHost
+
+Identify an host with a url.
 
 ```javascript
 import oyster from 'oyster'
  
-oyster.getHost('http://uptobox.com/randomhash').map(console.log); // uptobox
-oyster.getHost('http://no-host.com/randomhash').mapErr(console.log); // Prints a stringified InvalidArgumentError
+console.log(oyster.getHost('http://uptobox.com/randomhash')); // uptobox
+console.log(oyster.getHost('http://no-host.com/randomhash')); // Prints an empty string
 ```
+
+### use
+
+Register a custom host. If identifier match an existing one, it is replaced.
+
+```javascript
+import oyster from 'oyster'
+
+oyster.use({
+  identifier: 'stub',
+  match(url: string): boolean {
+    // ...
+  },
+  info(url: string): Promise<Info> {
+    // ...
+  },
+  download(url: string, options: DownloadOptions): Promise<ReadStream> {
+    // ...
+  },
+});
+```
+
+### info
+
+Get file infos from host.
 
 ```javascript
 import oyster from 'oyster'
 
 oyster
   .info('http://uptobox.com/randomhash')
-  .then((info) => info.map(console.log))
+  .then((info) => console.log)
 ;
 // {
 //   url: 'http://uptobox.com/randomhash',
@@ -37,6 +66,10 @@ oyster
 //   cooldown: 0
 // }
 ```
+
+### download
+
+Get download stream so you can stop or pause it if you need.
 
 ```javascript
 import oyster from 'oyster'
@@ -52,12 +85,8 @@ oyster
       target: './download.mp4'
     }
   )
-  .then((download) => {
-    if (download.isOk()) {
-      download.map((stream) => stream.on('close', () => console.log('File downloaded!')));
-    } else {
-      download.mapErr(console.log);
-    }
+  .then((stream) => {
+    stream.on('close', () => console.log('File downloaded!'));
   })
 ;
 ```
