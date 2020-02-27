@@ -1,7 +1,7 @@
 module.exports = {
   testEnvironment: 'node',
   notify: true,
-  testRegex: '(src/.*\\.spec\\.ts$',
+  testRegex: '(src/.*\\.spec)\\.ts$',
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
