@@ -1,6 +1,6 @@
 # oyster
 
-![Build on Travis CI](https://travis-ci.org/ilgazil/oyster.svg?branch=master) [![Code coverage with CodeCov](https://codecov.io/gh/ilgazil/oyster/branch/master/graph/badge.svg)](https://codecov.io/gh/ilgazil/oyster)
+![Build on Travis CI](https://travis-ci.com/ilgazil/oyster.svg?branch=master) [![Code coverage with CodeCov](https://codecov.io/gh/ilgazil/oyster/branch/master/graph/badge.svg)](https://codecov.io/gh/ilgazil/oyster)
 
 Analyse urls and retrieve actual file download url from supported hosts (listed below).
 
