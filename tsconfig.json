@@ -10,7 +10,7 @@
     "outDir": "dist",
     "baseUrl": "."
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/host/index.spec.ts", "tests/host/uptobox/info.spec.ts", "tests/host/uptobox/download.spec.ts", "tests/host/uptobox/auth.spec.ts", "tests/index.spec.ts"],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"

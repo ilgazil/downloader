@@ -1,10 +1,10 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { ReadStream, WriteStream } from 'fs';
-import { download } from './download';
-import LoginError from '../../errors/LoginError';
-import ServerError from '../../errors/ServerError';
-import { DownloadOptions } from '../../types';
+import { download } from '../../../src/host/uptobox/download';
+import LoginError from '../../../src/errors/LoginError';
+import ServerError from '../../../src/errors/ServerError';
+import { DownloadOptions } from '../../../src/types';
 
 describe('Uptobox download', () => {
   describe('::download', () => {

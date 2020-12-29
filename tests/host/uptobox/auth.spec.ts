@@ -1,9 +1,9 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import moment from 'moment';
-import { isCookieValid, authenticate } from './auth';
-import LoginError from '../../errors/LoginError';
-import ServerError from '../../errors/ServerError';
+import { isCookieValid, authenticate } from '../../../src/host/uptobox/auth';
+import LoginError from '../../../src/errors/LoginError';
+import ServerError from '../../../src/errors/ServerError';
 
 describe('Uptobox auth', () => {
   describe('::isCookieValid', () => {

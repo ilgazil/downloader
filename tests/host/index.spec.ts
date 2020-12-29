@@ -1,8 +1,8 @@
 import { ReadStream } from 'fs';
-import { use, getHost, info, download } from './';
-import * as uptobox from './uptobox';
-import InvalidArgumentError from '../errors/InvalidArgumentError';
-import { Host, Info, DownloadOptions } from '../types';
+import { use, getHost, info, download } from '../../src/host';
+import * as uptobox from '../../src/host/uptobox';
+import InvalidArgumentError from '../../src/errors/InvalidArgumentError';
+import { Host, Info, DownloadOptions } from '../../src/types';
 
 class DummyReadStream extends ReadStream {};
 const MockedReadStream = jest.fn<DummyReadStream, any>();

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { parseFileInfo, parseCooldownInfo, info } from './info';
-import ServerError from '../../errors/ServerError';
-import ParsingError from '../../errors/ParsingError';
+import { parseFileInfo, parseCooldownInfo, info } from '../../../src/host/uptobox/info';
+import ServerError from '../../../src/errors/ServerError';
+import ParsingError from '../../../src/errors/ParsingError';
 
 describe('Uptobox info', () => {
   describe('::parseFileInfo', () => {
