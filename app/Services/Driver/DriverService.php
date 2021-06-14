@@ -14,6 +14,11 @@ class DriverService
         $this->drivers[] = $driver;
     }
 
+    public function all(): array
+    {
+        return $this->drivers;
+    }
+
     public function findByUrl(string $url): DriverInterface
     {
         foreach ($this->drivers as $driver) {
