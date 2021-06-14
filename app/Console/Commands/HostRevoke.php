@@ -22,6 +22,8 @@ class HostRevoke extends Command
      */
     protected $description = 'Unauthenticate on a host, and remove saved credentials';
 
+    protected DriverService $driverService;
+
     /**
      * Create a new command instance.
      *
