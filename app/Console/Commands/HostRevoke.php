@@ -6,23 +6,21 @@ use Illuminate\Console\Command;
 
 use App\Services\Driver\DriverService;
 
-class HostAuth extends Command
+class HostRevoke extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'host:auth {driver} {login} {password}';
+    protected $signature = 'host:revoke {driver}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Authenticate on a host';
-
-    protected DriverService $driverService;
+    protected $description = 'Unauthenticate on a host, and remove saved credentials';
 
     /**
      * Create a new command instance.
@@ -44,10 +42,9 @@ class HostAuth extends Command
     public function handle()
     {
         $driver = $this->driverService->findByName($this->argument('driver'));
-        $driver->authenticate($this->argument('login'), $this->argument('password'));
+        $driver->unauthenticate();
 
-        echo 'Connected to ' . $driver->getName() . PHP_EOL .
-            'Cookie: ' . $driver->getCookie() . PHP_EOL;
+        echo 'Disconnected of ' . $driver->getName() . PHP_EOL;
 
         return 0;
     }
