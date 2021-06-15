@@ -187,13 +187,6 @@ class UpToBoxDriver extends DriverInterface
             throw new DriverException('Unable to reach ' . $url . ' (received ' . $response->statusText . ')');
         }
 
-        if (isset($response->headers['set-cookie'])) {
-            $model = DriverModel::findOrNew($this->getName());
-            $model->name = $this->getName();
-            $model->cookie = $response->headers['set-cookie'];
-            $model->save();
-        }
-
         $dom = new Dom();
         $dom->loadStr($response->body);
 
