@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Services\File\FileService;
+use App\Services\Output\ColoredStringWriter;
 
 class UrlDownload extends Command
 {
@@ -43,13 +44,17 @@ class UrlDownload extends Command
      */
     public function handle()
     {
-        $download = $this->fileService->download(
-            $this->argument('url'),
-            $this->argument('target')
-        );
+        try {
+            $download = $this->fileService->download(
+                $this->argument('url'),
+                $this->argument('target')
+            );
 
-        echo 'File: ' . $download->getTarget() . PHP_EOL .
+            echo 'File: ' . $download->getTarget() . PHP_EOL .
             'Size: ' . $download->getFileSize() . PHP_EOL;
+        } catch (\Exception $e) {
+            echo 'Unable to download: ' . (new ColoredStringWriter())->getColoredString($e->getMessage(), 'red') . PHP_EOL;
+        }
 
         return 0;
     }

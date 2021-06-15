@@ -149,13 +149,13 @@ class Download
         }
 
         // @see https://github.com/anlutro/php-curl/issues/65
-        try {
+        // try {
             $response = $request->send();
-        } catch (\InvalidArgumentException $e) {
-            if (!$e->getMessage() === 'Invalid response header') {
-                throw $e;
-            }
-        }
+        // } catch (\InvalidArgumentException $e) {
+        //     if (!$e->getMessage() === 'Invalid response header') {
+        //         throw $e;
+        //     }
+        // }
 
         if ($model) {
             $model->progress = 100;

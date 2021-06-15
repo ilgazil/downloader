@@ -84,6 +84,17 @@ class UpToBoxParser
         return trim(str_replace('&nbsp;', ' ', $node->text));
     }
 
+    public function getFileError(): string
+    {
+        $node = $this->getDom()->find('div#dl span.red p');
+
+        if (!count($node)) {
+            return '';
+        }
+
+        return trim(str_replace('&nbsp;', ' ', $node->text));
+    }
+
     public function getDownloadLink(): string
     {
         if ($this->getAuthenticatedDownloadLink()) {

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Services\File\FileService;
+use App\Services\Output\ColoredStringWriter;
 
 class UrlInfo extends Command
 {
@@ -48,10 +49,18 @@ class UrlInfo extends Command
         foreach ($urls as $url) {
             $metadata = $this->fileService->info($url);
 
+            if ($metadata->getFileError()) {
+                $state = (new ColoredStringWriter())->getColoredString($metadata->getFileError(), 'red');
+            } else if ($metadata->getDownloadCooldown()) {
+                $state = (new ColoredStringWriter())->getColoredString($metadata->getDownloadCooldown(), 'cyan');
+            } else {
+                $state = (new ColoredStringWriter())->getColoredString('ready', 'green');
+            }
+
             echo 'Host: ' . $metadata->getDriverName() . PHP_EOL .
                 'File name: ' . $metadata->getFileName() . PHP_EOL .
                 'Size: ' . $metadata->getFileSize() . PHP_EOL .
-                'State: ' . ($metadata->getDownloadCooldown() ?: 'ready') . PHP_EOL;
+                'State: ' . $state . PHP_EOL;
         }
 
         return 0;

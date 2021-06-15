@@ -2,6 +2,6 @@
 
 namespace App\Services\File\Exceptions;
 
-class DownloadException extends \Exception
+class DownloadCooldownException extends \Exception
 {
 }

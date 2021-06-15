@@ -8,6 +8,8 @@ use PHPHtmlParser\Dom;
 use App\Models\Driver as DriverModel;
 use App\Models\Download as DownloadModel;
 use App\Services\File\Download;
+use App\Services\File\Exceptions\DownloadCooldownException;
+use App\Services\File\Exceptions\DownloadException;
 use App\Services\File\Metadata;
 use App\Services\Driver\DriverInterface;
 
@@ -91,6 +93,7 @@ class UpToBoxDriver extends DriverInterface
         $metadata->setDriverName($this->getName());
         $metadata->setFileName($parser->getFileName());
         $metadata->setFileSize($parser->getFileSize());
+        $metadata->setFileError($parser->getFileError());
         $metadata->setDownloadCooldown($parser->getDownloadCooldown());
 
         return $metadata;
@@ -101,6 +104,10 @@ class UpToBoxDriver extends DriverInterface
         $this->validateUrl($url);
 
         $parser = new UpToBoxParser($url);
+
+        if ($parser->getFileError()) {
+            throw new DownloadException($parser->getFileError());
+        }
 
         if ($parser->getDownloadCooldown()) {
             throw new DownloadCooldownException($parser->getDownloadCooldown());

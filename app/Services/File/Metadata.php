@@ -8,6 +8,7 @@ class Metadata
     protected string $driverName = '';
     protected string $fileName = '';
     protected string $fileSize = '';
+    protected string $fileError = '';
     protected string $downloadCooldown = '';
 
     public function setUrl(string $url): void
@@ -48,6 +49,16 @@ class Metadata
     public function getFileSize(): string
     {
         return $this->fileSize;
+    }
+
+    public function setFileError(string $fileError): void
+    {
+        $this->fileError = $fileError;
+    }
+
+    public function getFileError(): string
+    {
+        return $this->fileError;
     }
 
     public function setDownloadCooldown(string $downloadCooldown): void
