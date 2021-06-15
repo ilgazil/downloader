@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
+use App\Models\Driver as DriverModel;
 use App\Services\Driver\DriverService;
+use App\Services\Output\ColoredStringWriter;
 
 class HostStatus extends Command
 {
@@ -48,8 +50,15 @@ class HostStatus extends Command
             ? [$this->driverService->findByName($this->argument('driver'))]
             : $this->driverService->all();
 
+        $writer = new ColoredStringWriter();
+
         foreach ($drivers as $driver) {
-            $statuses[] = 'Host: ' . $driver->getName() . PHP_EOL;
+            $model = DriverModel::find($driver->getName());
+
+            $statuses[] = 'Host: ' . $driver->getName() . PHP_EOL .
+                'Login: ' . (($model && $model->login)
+                    ? $writer->getColoredString('Configured', 'green')
+                    : $writer->getColoredString('Not configured', 'yellow') . PHP_EOL);
         }
 
         echo implode(PHP_EOL . PHP_EOL, $statuses) . PHP_EOL;
