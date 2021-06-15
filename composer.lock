@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "anlutro/curl",
-            "version": "1.5.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/anlutro/php-curl.git",
-                "reference": "9bdb943bacc9955b5a06c3bd9817a9fee10664eb"
+                "reference": "836c7f79ffe972563cf5e55dafe08eace61454f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/anlutro/php-curl/zipball/9bdb943bacc9955b5a06c3bd9817a9fee10664eb",
-                "reference": "9bdb943bacc9955b5a06c3bd9817a9fee10664eb",
+                "url": "https://api.github.com/repos/anlutro/php-curl/zipball/836c7f79ffe972563cf5e55dafe08eace61454f2",
+                "reference": "836c7f79ffe972563cf5e55dafe08eace61454f2",
                 "shasum": ""
             },
             "require": {
@@ -46,9 +46,9 @@
             "description": "Simple OOP cURL wrapper.",
             "support": {
                 "issues": "https://github.com/anlutro/php-curl/issues",
-                "source": "https://github.com/anlutro/php-curl/tree/1.5.0"
+                "source": "https://github.com/anlutro/php-curl/tree/1.5.1"
             },
-            "time": "2021-06-01T18:20:47+00:00"
+            "time": "2021-06-14T19:30:35+00:00"
         },
         {
             "name": "asm89/stack-cors",
