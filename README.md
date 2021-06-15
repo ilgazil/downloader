@@ -37,7 +37,7 @@ Connected to SomeHost
 
 
 
-#### host:auth
+#### host:revoke
 
 ```shell
 php artisan host:revoke SomeHost
@@ -45,6 +45,19 @@ php artisan host:revoke SomeHost
 
 ```shell
 Disconnected of SomeHost
+```
+
+
+
+#### host:status
+
+```shell
+php artisan host:status
+```
+
+```shell
+Host: SomeHost
+Login: Not configured
 ```
 
 
