@@ -52,7 +52,7 @@ class UrlInfo extends Command
             if ($metadata->getFileError()) {
                 $state = (new ColoredStringWriter())->getColoredString($metadata->getFileError(), 'red');
             } else if ($metadata->getDownloadCooldown()) {
-                $state = (new ColoredStringWriter())->getColoredString($metadata->getDownloadCooldown(), 'cyan');
+                $state = (new ColoredStringWriter())->getColoredString($metadata->getDownloadCooldown() . ' cooldown', 'cyan');
             } else {
                 $state = (new ColoredStringWriter())->getColoredString('ready', 'green');
             }

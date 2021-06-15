@@ -41,13 +41,17 @@ class UpToBoxParser
 
     public function getDownloadCooldown(): string
     {
-        $node = $this->dom->find('div#dl table.comparison-table span.time-remaining');
+        $node = $this->dom->find('div#dl span.red p');
 
         if (!count($node)) {
             return '';
         }
 
-        return trim(str_replace('&nbsp;', ' ', $node->text));
+        if (preg_match('/you can wait (.*) to launch a new download/', $node->text, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
     }
 
     public function getFileError(): string
@@ -58,7 +62,13 @@ class UpToBoxParser
             return '';
         }
 
-        return trim(str_replace('&nbsp;', ' ', $node->text));
+        $message = trim(str_replace('&nbsp;', ' ', $node->text));
+
+        if (strpos($message, 'You need a PREMIUM account to download new files immediately without waiting') === 0) {
+            return '';
+        }
+
+        return $message;
     }
 
     public function getPremiumDownloadLink(): string
