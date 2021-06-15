@@ -9,7 +9,6 @@ abstract class DriverInterface
 {
     abstract function match(string $url): bool;
     abstract function getName(): string;
-    abstract function getCookie(): string;
     abstract function authenticate(string $login, string $password): void;
     abstract function unauthenticate(): void;
     abstract function infos(string $url): Metadata;

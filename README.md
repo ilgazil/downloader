@@ -28,12 +28,23 @@ php artisan migrate
 #### host:auth
 
 ```shell
-php artisan auth:auth user_name p455w0rd
+php artisan host:auth SomeHost user_name p455w0rd
 ```
 
 ```shell
 Connected to SomeHost
-Cookie: xauthtoken=0fabar3o4orxhaps
+```
+
+
+
+#### host:auth
+
+```shell
+php artisan host:revoke SomeHost
+```
+
+```shell
+Disconnected of SomeHost
 ```
 
 
@@ -62,5 +73,5 @@ php artisan url:download https://some-host.com/hashcode /home/user/videos
 ```shell
 Host: SomeHost
 File: /home/user/videos/Some.file.name[1080p].mkv
-Size: 388396743
+Size: 370.40 MB
 ```

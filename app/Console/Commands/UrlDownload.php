@@ -50,7 +50,7 @@ class UrlDownload extends Command
                 $this->argument('target')
             );
 
-            echo 'File: ' . $download->getTarget() . PHP_EOL .
+            echo 'File: ' . realpath($download->getTarget()) . PHP_EOL .
             'Size: ' . $download->getFileSize() . PHP_EOL;
         } catch (\Exception $e) {
             echo 'Unable to download: ' . (new ColoredStringWriter())->getColoredString($e->getMessage(), 'red') . PHP_EOL;

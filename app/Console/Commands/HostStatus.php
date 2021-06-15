@@ -49,8 +49,7 @@ class HostStatus extends Command
             : $this->driverService->all();
 
         foreach ($drivers as $driver) {
-            $statuses[] = 'Host: ' . $driver->getName() . PHP_EOL .
-                'Cookie: ' . $driver->getCookie();
+            $statuses[] = 'Host: ' . $driver->getName() . PHP_EOL;
         }
 
         echo implode(PHP_EOL . PHP_EOL, $statuses) . PHP_EOL;

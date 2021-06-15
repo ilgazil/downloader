@@ -46,8 +46,7 @@ class HostAuth extends Command
         $driver = $this->driverService->findByName($this->argument('driver'));
         $driver->authenticate($this->argument('login'), $this->argument('password'));
 
-        echo 'Connected to ' . $driver->getName() . PHP_EOL .
-            'Cookie: ' . $driver->getCookie() . PHP_EOL;
+        echo 'Connected to ' . $driver->getName() . PHP_EOL;
 
         return 0;
     }
