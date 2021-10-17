@@ -3,15 +3,22 @@
 namespace App\Services\Driver\Drivers;
 
 use anlutro\cURL\cURL;
+use App\Services\Driver\Exceptions\AuthException;
+use App\Services\Driver\Exceptions\DriverException;
 use PHPHtmlParser\Dom;
 
 use App\Models\Driver as DriverModel;
-use App\Models\Download as DownloadModel;
 use App\Services\File\Download;
 use App\Services\File\Exceptions\DownloadCooldownException;
 use App\Services\File\Exceptions\DownloadException;
 use App\Services\File\Metadata;
 use App\Services\Driver\DriverInterface;
+use PHPHtmlParser\Exceptions\ChildNotFoundException;
+use PHPHtmlParser\Exceptions\CircularException;
+use PHPHtmlParser\Exceptions\ContentLengthException;
+use PHPHtmlParser\Exceptions\LogicalException;
+use PHPHtmlParser\Exceptions\NotLoadedException;
+use PHPHtmlParser\Exceptions\StrictException;
 
 class UpToBoxDriver extends DriverInterface
 {
@@ -26,6 +33,15 @@ class UpToBoxDriver extends DriverInterface
         return 'UpToBox';
     }
 
+    /**
+     * @throws AuthException
+     * @throws ChildNotFoundException
+     * @throws ContentLengthException
+     * @throws CircularException
+     * @throws LogicalException
+     * @throws NotLoadedException
+     * @throws StrictException
+     */
     public function authenticate(string $login, string $password): void
     {
         $this->login($login, $password);
@@ -33,14 +49,18 @@ class UpToBoxDriver extends DriverInterface
 
     public function unauthenticate(): void
     {
-        $model = DriverModel::find($this->getName());
-
-        if ($model) {
-            $model->delete();
-        }
+        DriverModel::find($this->getName())?->delete();
     }
 
-    public function infos(string $url): Metadata
+    /**
+     * @throws ChildNotFoundException
+     * @throws CircularException
+     * @throws ContentLengthException
+     * @throws DriverException
+     * @throws LogicalException
+     * @throws StrictException
+     */
+    public function getMetadata(string $url): Metadata
     {
         $parser = new UpToBoxParser($this->getDom($url));
 
@@ -54,7 +74,17 @@ class UpToBoxDriver extends DriverInterface
         return $metadata;
     }
 
-    public function download(string $url, string $target): Download
+    /**
+     * @throws ChildNotFoundException
+     * @throws CircularException
+     * @throws ContentLengthException
+     * @throws DriverException
+     * @throws DownloadCooldownException
+     * @throws DownloadException
+     * @throws LogicalException
+     * @throws StrictException
+     */
+    public function getDownload(string $url): Download
     {
         $parser = new UpToBoxParser($this->getDom($url));
 
@@ -89,32 +119,15 @@ class UpToBoxDriver extends DriverInterface
             throw new DownloadException('Unable to get download link');
         }
 
-        $model = DownloadModel::findOrNew($url);
-        $model->url = $url;
-        $model->hostName = $this->getName();
-        $model->fileName = $parser->getFileName();
-        $model->fileSize = $parser->getFileSize();
-        $model->target = $target;
-        $model->state = Download::$PENDING;
+        $download = new Download();
+        $download->setUrl($downloadLink);
+        $download->setDriver($this);
+        $download->setFileName($parser->getFileName());
+        $download->setFileSize($parser->getFileSize());
 
-        // If a path is given, filename is retrieved from download link
-        if (
-            !preg_match('/.*\/([^\/]+\.[^\/]+)$/', $target) &&
-            preg_match('/.*\/([^\/]+\.[^\/]+)$/', $downloadLink, $matches)
-        ) {
-            $model->target .= DIRECTORY_SEPARATOR . urldecode($matches[1]);
-        }
-
-        $model->save();
-
-        $headers = [];
         if ($this->getCookie()) {
-            $headers['Cookie'] = $this->getCookie();
+            $download->setHeader('Cookie', $this->getCookie());
         }
-
-        $download = new Download($model, $headers);
-
-        $download->start($downloadLink);
 
         return $download;
     }
@@ -134,6 +147,15 @@ class UpToBoxDriver extends DriverInterface
         return '';
     }
 
+    /**
+     * @throws AuthException
+     * @throws ChildNotFoundException
+     * @throws CircularException
+     * @throws ContentLengthException
+     * @throws LogicalException
+     * @throws NotLoadedException
+     * @throws StrictException
+     */
     protected function login(string $login, string $password): void
     {
         $curl = new cURL();
@@ -162,13 +184,24 @@ class UpToBoxDriver extends DriverInterface
         $model->save();
     }
 
+    /**
+     * @throws DriverException
+     */
     protected function validateUrl(string $url): void
     {
         if (!$this->match($url)) {
-            throw new HostException('Wrong host for querying info : ' . $this->getName() . ' cannot handle ' . $url);
+            throw new DriverException('Wrong host for querying info : ' . $this->getName() . ' cannot handle ' . $url);
         }
     }
 
+    /**
+     * @throws DriverException
+     * @throws ChildNotFoundException
+     * @throws CircularException
+     * @throws ContentLengthException
+     * @throws LogicalException
+     * @throws StrictException
+     */
     protected function getDom(string $url): Dom
     {
         $this->validateUrl($url);

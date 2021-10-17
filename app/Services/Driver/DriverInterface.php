@@ -11,6 +11,6 @@ abstract class DriverInterface
     abstract function getName(): string;
     abstract function authenticate(string $login, string $password): void;
     abstract function unauthenticate(): void;
-    abstract function infos(string $url): Metadata;
-    abstract function download(string $url, string $target): Download;
+    abstract function getMetadata(string $url): Metadata;
+    abstract function getDownload(string $url): Download;
 }

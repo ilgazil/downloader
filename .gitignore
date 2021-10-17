@@ -1,5 +1,8 @@
 /.vscode
+/.idea
 /node_modules
+/builds
+/database
 /public/hot
 /public/storage
 /storage/*.key
@@ -13,3 +16,4 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/_database/database.sqlite

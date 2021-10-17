@@ -1,90 +1,74 @@
-# Host Downloader
+<h1 align="center">Host Downloader</h1>
 
-Hosted files downloader.
+<p align="center">
+    Download files hosted on the web
+</p>
 
-
-
-## Installation
-
-```shell
-git clone https://github.com/ilgazil/host-downloader.git
-cd host-downloader
-composer install
-cp .env.exemple .env
-```
-
-Configure your database following the [Laravel documentation](https://laravel.com/docs/8.x/database#configuration) and then run the migrations.
-
-```shell
-php artisan migrate
-```
-
-
+---
 
 ## Usage
 
-### Using the cli
+### Managing hosts
 
 #### host:auth
 
-```shell
-php artisan host:auth SomeHost user_name p455w0rd
-```
+Used to locally store your credentials into application.
+It allows to unlock all your premium features while downloading.
 
 ```shell
+host-downloader host:auth SomeHost user_name p455w0rd
+```
+
+```
 Connected to SomeHost
 ```
-
-
 
 #### host:revoke
 
 ```shell
-php artisan host:revoke SomeHost
+host-downloader host:revoke SomeHost
 ```
 
-```shell
+```
 Disconnected of SomeHost
 ```
-
-
 
 #### host:status
 
 ```shell
-php artisan host:status
+host-downloader host:status
 ```
 
-```shell
+```
 Host: SomeHost
 Login: Not configured
 ```
 
-
+### Retrieving infos and downloading files
 
 #### url:info
 
 ```shell
-php artisan url:info https://some-host.com/hashcode
+host-downloader url:info https://some-host.com/hashcode
 ```
 
-```shell
+```
 Host: SomeHost
 File name: Some.file.name[1080p]
 Size: 370.40 MB
-State: ready
+State: Ready
 ```
-
-
 
 #### url:download
 
 ```shell
-php artisan url:download https://some-host.com/hashcode /home/user/videos
+host-downloader url:download https://some-host.com/hashcode /home/user/videos
 ```
 
-```shell
+```
 Host: SomeHost
+Name: Some.file.name[1080p]
 File: /home/user/videos/Some.file.name[1080p].mkv
 Size: 370.40 MB
+[▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░]  63% - 2 mins left
 ```

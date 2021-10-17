@@ -2,36 +2,23 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-
-use App\Services\Driver\DriverService;
 use App\Services\Driver\Drivers\UpToBoxDriver;
+use App\Services\Driver\DriverService;
+use Illuminate\Support\ServiceProvider;
 
 class DriverServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     *
-     * @return void
-     */
+    public function boot()
+    {}
+
     public function register()
     {
         $this->app->singleton(DriverService::class, function () {
-            $driverService = new DriverService();
+            $service = new DriverService();
 
-            $driverService->register(new UpToBoxDriver());
+            $service->register(new UpToBoxDriver());
 
-            return $driverService;
+            return $service;
         });
-    }
-
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        //
     }
 }

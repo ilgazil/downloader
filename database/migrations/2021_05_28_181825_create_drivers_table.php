@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateDriversTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('drivers', function (Blueprint $table) {
@@ -21,11 +16,6 @@ class CreateDriversTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('drivers');
