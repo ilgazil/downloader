@@ -28,7 +28,7 @@ Note it will also save your credentials in order to reconnect in case of outdate
 host-downloader host:auth host login password
 ```
 
-* *host* - Host ID, see supported hosts
+* *host* - Host ID, see [supported hosts](#supported-hosts)
 * *login* - Host user login
 * *password* - Host user password
 
@@ -45,7 +45,7 @@ Revoke your host cookies. It also will remove your credentials from local databa
 host-downloader host:revoke host
 ```
 
-* *host* - Host ID, see supported hosts
+* *host* - Host ID, see [supported hosts](#supported-hosts)
 
 ```shell
 $ host-downloader host:revoke SomeHost
@@ -54,7 +54,7 @@ Disconnected of SomeHost
 
 #### host:status
 
-Print the connection status hosts or of one host in particular.
+Print the connection status hosts or of one host in particular (see [supported hosts](#supported-hosts)).
 
 ```shell
 host-downloader host:status [host]
@@ -107,3 +107,9 @@ File: /home/user/videos/Some.file.name[1080p].mkv
 Size: 370.40 MB
 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░]  63% - 2 mins left
 ```
+
+## Supported hosts
+
+| Host name     | Handle premium |
+| ------------- |:--------------:|
+| UpToBox       | ✔ |
