@@ -9,9 +9,9 @@ use App\Services\Output\ColoredStringWriter;
 
 class HostStatusCommand extends AbstractCommand
 {
-    protected $signature = 'host:status {driver?}';
+    protected $signature = 'host:status {driver=all : driver name}';
 
-    protected $description = 'Display host auth infos. If no host is provided, displays every hosts';
+    protected $description = 'Display host auth infos';
 
     protected DriverService $driverService;
 
@@ -28,9 +28,9 @@ class HostStatusCommand extends AbstractCommand
     protected function _handle()
     {
         $messages = [];
-        $drivers = $this->argument('driver')
-            ? [$this->driverService->findByName($this->argument('driver'))]
-            : $this->driverService->all();
+        $drivers = $this->argument('driver') === 'all'
+            ? $this->driverService->all()
+            : [$this->driverService->findByName($this->argument('driver'))];
 
         $writer = new ColoredStringWriter();
 

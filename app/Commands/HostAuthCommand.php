@@ -7,7 +7,10 @@ use App\Services\Driver\Exceptions\NoMatchingDriverException;
 
 class HostAuthCommand extends AbstractCommand
 {
-    protected $signature = 'host:auth {driver} {login} {password}';
+    protected $signature = 'host:auth
+        {driver : driver name}
+        {login : credential login}
+        {password : credential password}';
 
     protected $description = 'Authenticate on a host';
 

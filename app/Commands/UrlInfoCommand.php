@@ -7,7 +7,7 @@ use App\Services\Output\ColoredStringWriter;
 
 class UrlInfoCommand extends AbstractCommand
 {
-    protected $signature = 'url:info {url*}';
+    protected $signature = 'url:info {url* : the full url of the hosted file}';
 
     protected $description = 'Check for file infos';
 

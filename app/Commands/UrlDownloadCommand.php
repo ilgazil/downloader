@@ -8,7 +8,9 @@ use App\Services\File\Exceptions\DownloadException;
 
 class UrlDownloadCommand extends AbstractCommand
 {
-    protected $signature = 'url:download {url} {target}';
+    protected $signature = 'url:download
+        {url : the full url of the hosted file}
+        {target=. : folder, filename or full path where to save the file}';
 
     protected $description = 'Download hosted file';
 

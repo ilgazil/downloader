@@ -16,6 +16,8 @@ host-downloader migrate
 
 ## Usage
 
+Run the application without any parameters to see available commands. You can have more info about each command by invoking them and passing `--help` argument.
+
 ### Managing hosts
 
 #### host:auth
@@ -107,6 +109,16 @@ File: /home/user/videos/Some.file.name[1080p].mkv
 Size: 370.40 MB
 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░]  63% - 2 mins left
 ```
+
+### Hidden commands
+
+The following commands are not listed while running the application summary because they deserve installation, updating or debug purpose.
+
+* `migrate` Run the database migrations
+* `migrate:fresh` Drop all tables and re-run all migrations
+* `migrate:reset` Rollback all database migrations
+* `migrate:rollback` Rollback the last database migration
+* `migrate:status` Show the status of each migration
 
 ## Supported hosts
 

@@ -7,7 +7,7 @@ use App\Services\Driver\Exceptions\NoMatchingDriverException;
 
 class HostRevokeCommand extends AbstractCommand
 {
-    protected $signature = 'host:revoke {driver}';
+    protected $signature = 'host:revoke {driver : driver name}';
 
     protected $description = 'Unauthenticate on a host, and remove saved credentials';
 
