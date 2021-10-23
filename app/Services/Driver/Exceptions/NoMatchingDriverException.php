@@ -4,8 +4,8 @@ namespace App\Services\Driver\Exceptions;
 
 class NoMatchingDriverException extends \Exception
 {
-    public function __construct(string $url)
+    public function __construct(string $identifier)
     {
-        parent::__construct('No matching driver for ' . $url);
+        parent::__construct('No matching driver for ' . $identifier);
     }
 }

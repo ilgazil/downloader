@@ -4,92 +4,149 @@ namespace App\Services\File;
 
 use anlutro\cURL\cURL;
 
-use App\Models\Download as DownloadModel;
+use App\Services\Driver\DriverInterface;
+use App\Services\File\Exceptions\DownloadException;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class Download
 {
-    static public $PENDING = 'pending';
-    static public $RUNNING = 'running';
-    static public $PAUSED = 'paused';
-    static public $DONE = 'done';
+    static public string $PENDING = 'pending';
+    static public string $RUNNING = 'running';
+    static public string $PAUSED = 'paused';
+    static public string $DONE = 'done';
 
-    protected DownloadModel $model;
-    protected array $headers;
+    protected string $url;
+    protected string $target;
+    protected array $headers = [];
+    protected DriverInterface $driver;
+    protected string $fileName;
+    protected string $fileSize;
+    protected string $status;
 
-    protected int $fileSize = 0;
-    protected int $progress = 0;
-
-    public function __construct(DownloadModel $model, array $headers = [])
+    public function __construct()
     {
-        $this->model = $model;
-        $this->headers = $headers;
+        $this->status = self::$PENDING;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): void
+    {
+        $this->url = $url;
     }
 
     public function getTarget(): string
     {
-        return $this->model->target;
+        return $this->target;
+    }
+
+    public function setTarget(string $target): void
+    {
+        $this->target = $target;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function setHeaders(array $headers): void
+    {
+        $this->headers = $headers;
+    }
+
+    public function setHeader(string $name, $value): void
+    {
+        $this->headers[$name] = $value;
+    }
+
+    public function removeHeader(string $name): void
+    {
+        unlink($this->headers[$name]);
+    }
+
+    public function getDriver(): DriverInterface
+    {
+        return $this->driver;
+    }
+
+    public function setDriver(DriverInterface $driver): void
+    {
+        $this->driver = $driver;
+    }
+
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    public function setFileName(string $fileName): void
+    {
+        $this->fileName = $fileName;
     }
 
     public function getFileSize(): string
     {
-        return $this->model->fileSize;
+        return $this->fileSize;
     }
 
-    public function start(string $url): void
+    public function setFileSize(string $fileSize): void
+    {
+        $this->fileSize = $fileSize;
+    }
+
+    /**
+     * @throws DownloadException
+     */
+    public function start(ProgressBar $bar = null): void
     {
         $target = fopen($this->getTarget(), 'wb');
 
         if (!$target) {
-            throw new DownloadException('Unable to create ' . $this->getFilePath());
+            throw new DownloadException('Unable to write into ' . $this->getTarget());
         }
 
         $curl = new cURL();
 
-        $this->model->state = self::$RUNNING;
-        $this->model->save();
+        $this->status = self::$RUNNING;
 
         $request = $curl
-            ->newRequest('get', $url)
+            ->newRequest('get', $this->url)
             ->setOption(CURLOPT_HEADER, false)
-            ->setOption(CURLOPT_FILE, $target)
-            ->setOption(CURLOPT_NOPROGRESS, false)
-            ->setOption(
-                CURLOPT_PROGRESSFUNCTION,
-                function($curlResource, int $expectedSize, int $downloadedSize) {
-                    if (!$expectedSize) {
-                        return;
+            ->setOption(CURLOPT_FILE, $target);
+
+        if ($bar) {
+            $request
+                ->setOption(CURLOPT_NOPROGRESS, false)
+                ->setOption(
+                    CURLOPT_PROGRESSFUNCTION,
+                    function($curlResource, int $expectedSize, int $downloadedSize) use($bar) {
+                        if (!$expectedSize) {
+                            return;
+                        }
+
+                        $bar->setMaxSteps($expectedSize);
+                        $bar->setProgress($downloadedSize);
                     }
-
-                    if (!$this->fileSize) {
-                        $this->fileSize = $expectedSize;
-                    }
-
-                    $ratio = round($downloadedSize / $expectedSize * 100);
-
-                    if ($this->progress < $ratio) {
-                        $this->progress = $ratio;
-
-                        $this->model->progress = $ratio;
-                        $this->model->save();
-                    }
-                }
-            );
+                );
+        }
 
         foreach ($this->headers as $header => $value) {
             $request->setHeader($header, $value);
         }
 
-        // @todo Dig to seek why this can be falsy thrown (with UpToBox files for instance)
+        // @todo Why this can be falsy thrown (with UpToBox files for instance)
         try {
-            $response = $request->send();
+            $request->send();
         } catch (\UnexpectedValueException $e) {
             if (!$e->getMessage() === 'Invalid response header') {
                 throw $e;
             }
         }
 
-        $this->model->progress = 100;
-        $this->model->state = self::$DONE;
-        $this->model->save();
+        $this->status = self::$DONE;
     }
 }

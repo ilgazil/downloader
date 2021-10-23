@@ -2,7 +2,6 @@
 
 namespace App\Services\Driver;
 
-use App\Services\Driver\DriverInterface;
 use App\Services\Driver\Exceptions\NoMatchingDriverException;
 
 class DriverService
@@ -19,6 +18,9 @@ class DriverService
         return $this->drivers;
     }
 
+    /**
+     * @throws NoMatchingDriverException
+     */
     public function findByUrl(string $url): DriverInterface
     {
         foreach ($this->drivers as $driver) {
@@ -30,6 +32,9 @@ class DriverService
         throw new NoMatchingDriverException($url);
     }
 
+    /**
+     * @throws NoMatchingDriverException
+     */
     public function findByName(string $name): DriverInterface
     {
         foreach ($this->drivers as $driver) {
@@ -38,6 +43,6 @@ class DriverService
             }
         }
 
-        throw new NoMatchingDriverException($url);
+        throw new NoMatchingDriverException($name);
     }
 }
