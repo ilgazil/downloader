@@ -7,7 +7,7 @@ use App\Services\Output\ColoredStringWriter;
 
 class UrlInfoCommand extends AbstractCommand
 {
-    protected $signature = 'url:info {url* : the full url of the hosted file}';
+    protected $signature = 'url:info {urls* : the urls to retrieve headers from any host}';
 
     protected $description = 'Check for file infos';
 
@@ -22,9 +22,9 @@ class UrlInfoCommand extends AbstractCommand
 
     protected function _handle()
     {
-        $urls = $this->argument('url');
+        $urls = $this->argument('urls');
 
-        foreach ($urls as $url) {
+        foreach ($urls as $index => $url) {
             $metadata = $this->driverService
                 ->findByUrl($url)
                 ->getMetadata($url);
@@ -35,6 +35,10 @@ class UrlInfoCommand extends AbstractCommand
                 $state = (new ColoredStringWriter())->getColoredString($metadata->getDownloadCooldown() . ' cooldown', 'cyan');
             } else {
                 $state = (new ColoredStringWriter())->getColoredString('Ready', 'green');
+            }
+
+            if ($index) {
+                $this->line('');
             }
 
             $this->line('Host: ' . $metadata->getDriverName());

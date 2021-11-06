@@ -9,6 +9,10 @@
 ## Installation
 
 ```shell
+wget https://github.com/ilgazil/host-downloader/releases/download/untagged-301422919c680099f774/host-downloader.v0.1.0-beta.tar.gz
+tar -xvf host-downloader.v0.1.0-beta.tar.gz
+rm host-downloader.v0.1.0-beta.tar.gz
+sudo mv host-downloader /usr/bin
 mkdir ~/.host-downloader
 touch ~/.host-downloader/database.sqlite
 host-downloader migrate
@@ -77,16 +81,21 @@ Login: Not configured
 Print information about a link behind an url.
 
 ```shell
-host-downloader url:info url
+host-downloader url:info ...urls
 ```
 
-* *url* - URL to retrieve information from
+* *urls* - URLs to retrieve headers from any host
 
 ```shell
-$ host-downloader url:info https://some-host.com/hashcode
+$ host-downloader url:info https://some-host.com/hashcode https://some-host.com/hashcode2
 Host: SomeHost
 File name: Some.file.name[1080p]
 Size: 370.40 MB
+State: Ready
+
+Host: SomeHost
+File name: Some.other.file.name[1080p]
+Size: 372.25 MB
 State: Ready
 ```
 
@@ -95,18 +104,26 @@ State: Ready
 Print information about a link behind an url.
 
 ```shell
-host-downloader url:download url [target]
+host-downloader url:download [--target] ...urls
 ```
 
-* *url* - URL to download from
-* *target* - Optional - Local path for the download. It can be a directory or a filename. If not specified, it will download in current folder, with the default file name
+* *url* - URLs to download from any host
+* *target* - Optional - Local path for the download. If not specified, it will download in current folder
 
 ```shell
-$ host-downloader url:download https://some-host.com/hashcode /home/user/videos
+$ host-downloader url:download --target=./videos https://some-host.com/hashcode https://some-host.com/hashcode2
+Download 1/2
 Host: SomeHost
 Name: Some.file.name[1080p]
 File: /home/user/videos/Some.file.name[1080p].mkv
 Size: 370.40 MB
+[▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓]  100% - < 1 sec left
+
+Download 2/2
+Host: SomeHost
+Name: Some.other.file.name[1080p]
+File: /home/user/videos/Some.file.name[1080p].mkv
+Size: 372.25 MB
 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░]  63% - 2 mins left
 ```
 
