@@ -9,8 +9,8 @@ use App\Services\File\Exceptions\DownloadException;
 class UrlDownloadCommand extends AbstractCommand
 {
     protected $signature = 'url:download
-        {url : the full url of the hosted file}
-        {target=. : folder, filename or full path where to save the file}';
+        {urls* : the urls to download from any host}
+        {--target=. : folder where to save the file into}';
 
     protected $description = 'Download hosted file';
 
@@ -29,30 +29,38 @@ class UrlDownloadCommand extends AbstractCommand
      */
     protected function _handle()
     {
-        $target = $this->argument('target');
+        $count = count($this->argument('urls'));
 
-        $download = $this->driverService
-            ->findByUrl($this->argument('url'))
-            ->getDownload($this->argument('url'));
+        foreach ($this->argument('urls') as $index => $url) {
+            $download = $this->driverService
+                ->findByUrl($url)
+                ->getDownload($url);
 
-        // If a path is given, filename is retrieved from download link
-        if (
-            !preg_match('/.*\/([^\/]+\.[^\/]+)$/', $target) &&
-            preg_match('/.*\/([^\/]+\.[^\/]+)$/', $download->getUrl(), $matches)
-        ) {
-            $target .= DIRECTORY_SEPARATOR . urldecode($matches[1]);
+            $download->setTarget(
+                $this->option('target')
+                . DIRECTORY_SEPARATOR
+                . urldecode(substr($download->getUrl(), strrpos($download->getUrl(), '/') + 1))
+            );
+
+            if ($count > 1) {
+                if ($index++) {
+                    $this->line('');
+                }
+
+                $this->line("Download $index/$count");
+            }
+
+            $this->line('Host: ' . $download->getDriver()->getName());
+            $this->line('Name: ' . $download->getFileName());
+            $this->line('File: ' . $download->getTarget());
+            $this->line('Size: ' . $download->getFileSize());
+
+            $bar = $this->output->createProgressBar();
+            $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
+
+            $download->start($bar);
+
+            $this->line('');
         }
-
-        $download->setTarget($target);
-
-        $this->line('Host: ' . $download->getDriver()->getName());
-        $this->line('Name: ' . $download->getFileName());
-        $this->line('File: ' . $download->getTarget());
-        $this->line('Size: ' . $download->getFileSize());
-
-        $bar = $this->output->createProgressBar();
-        $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
-
-        $download->start($bar);
     }
 }
