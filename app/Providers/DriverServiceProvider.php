@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Driver\Drivers\UnFichierDriver;
 use App\Services\Driver\Drivers\UpToBoxDriver;
 use App\Services\Driver\DriverService;
 use Illuminate\Support\ServiceProvider;
@@ -17,6 +18,7 @@ class DriverServiceProvider extends ServiceProvider
             $service = new DriverService();
 
             $service->register(new UpToBoxDriver());
+            $service->register(new UnFichierDriver());
 
             return $service;
         });

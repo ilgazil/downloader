@@ -2,10 +2,7 @@
 
 namespace App\Services\Driver\Drivers;
 
-use anlutro\cURL\cURL;
 use PHPHtmlParser\Dom;
-
-use App\Services\Driver\Exceptions\DriverException;
 
 // @todo cache infos
 class UpToBoxParser
@@ -19,9 +16,9 @@ class UpToBoxParser
 
     public function getFileName(): string
     {
-        $node = $this->dom->find('div#dl h1.file-title');
+        $node = $this->dom->find('div#dl h1.file-title')[0];
 
-        if (count($node) && preg_match('/(.+)\.\w+\s\(([\d\.]+\s\w+)\)/', $node->text, $matches)) {
+        if ($node && preg_match('/(.+)\s\([\d\.]+\s\w+\)/', $node->text, $matches)) {
             return trim($matches[1]);
         }
 
@@ -30,10 +27,10 @@ class UpToBoxParser
 
     public function getFileSize(): string
     {
-        $node = $this->dom->find('div#dl h1.file-title');
+        $node = $this->dom->find('div#dl h1.file-title')[0];
 
-        if (count($node) && preg_match('/(.+)\.\w+\s\(([\d\.]+\s\w+)\)/', $node->text, $matches)) {
-            return trim($matches[2]);
+        if ($node && preg_match('/.+\s\(([\d\.]+\s\w+)\)/', $node->text, $matches)) {
+            return trim($matches[1]);
         }
 
         return '';
@@ -41,9 +38,9 @@ class UpToBoxParser
 
     public function getDownloadCooldown(): string
     {
-        $node = $this->dom->find('div#dl span.red p');
+        $node = $this->dom->find('div#dl span.red p')[0];
 
-        if (!count($node)) {
+        if (!$node) {
             return '';
         }
 
@@ -56,9 +53,9 @@ class UpToBoxParser
 
     public function getFileError(): string
     {
-        $node = $this->dom->find('div#dl span.red p');
+        $node = $this->dom->find('div#dl span.red p')[0];
 
-        if (!count($node)) {
+        if (!$node) {
             return '';
         }
 
@@ -73,9 +70,9 @@ class UpToBoxParser
 
     public function getPremiumDownloadLink(): string
     {
-        $node = $this->dom->find('div#dl div center a.big-button-green-flat');
+        $node = $this->dom->find('div#dl div center a.big-button-green-flat')[0];
 
-        if (!count($node)) {
+        if (!$node) {
             return '';
         }
 
@@ -84,20 +81,20 @@ class UpToBoxParser
 
     public function getAnonymousDownloadLink(): string
     {
-        $nodes = $this->dom->find('div#dl table.comparison-table a.big-button-green-flat');
+        $nodes = $this->dom->find('div#dl table.comparison-table a.big-button-green-flat')[1];
 
-        if (count($nodes) !== 2) {
+        if ($nodes) {
             return '';
         }
 
-        return $nodes->offsetGet(1)->href;
+        return $nodes->href;
     }
 
     public function getAnonymousDownloadToken(): string
     {
-        $node = $this->dom->find('div#dl table.comparison-table input');
+        $node = $this->dom->find('div#dl table.comparison-table input')[0];
 
-        if (!count($node)) {
+        if (!$node) {
           return '';
         }
 
@@ -106,8 +103,8 @@ class UpToBoxParser
 
     public function isAnonymous(): bool
     {
-        $node = $this->dom->find('div#navbar .navbar-items li');
+        $nodes = $this->dom->find('div#navbar .navbar-items li');
 
-        return count($node) < 6;
+        return count($nodes) < 6;
     }
 }

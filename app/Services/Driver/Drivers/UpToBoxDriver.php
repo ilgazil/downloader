@@ -109,6 +109,11 @@ class UpToBoxDriver extends DriverInterface
             throw new DownloadCooldownException($parser->getDownloadCooldown());
         }
 
+        $download = new Download();
+        $download->setDriver($this);
+        $download->setFileName($parser->getFileName());
+        $download->setFileSize($parser->getFileSize());
+
         if ($parser->getAnonymousDownloadToken()) {
             $this->postAnonymousDownloadToken($url, $parser->getAnonymousDownloadToken());
         }
@@ -119,11 +124,7 @@ class UpToBoxDriver extends DriverInterface
             throw new DownloadException('Unable to get download link');
         }
 
-        $download = new Download();
         $download->setUrl($downloadLink);
-        $download->setDriver($this);
-        $download->setFileName($parser->getFileName());
-        $download->setFileSize($parser->getFileSize());
 
         if ($this->getCookie()) {
             $download->setHeader('Cookie', $this->getCookie());
