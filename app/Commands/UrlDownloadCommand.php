@@ -39,7 +39,7 @@ class UrlDownloadCommand extends AbstractCommand
             $download->setTarget(
                 $this->option('target')
                 . DIRECTORY_SEPARATOR
-                . urldecode(substr($download->getUrl(), strrpos($download->getUrl(), '/') + 1))
+                . urldecode($download->getFileName())
             );
 
             if ($count > 1) {
