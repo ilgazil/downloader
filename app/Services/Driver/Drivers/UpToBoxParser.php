@@ -2,6 +2,7 @@
 
 namespace App\Services\Driver\Drivers;
 
+use App\Services\File\Cooldown;
 use PHPHtmlParser\Dom;
 
 // @todo cache infos
@@ -36,19 +37,19 @@ class UpToBoxParser
         return '';
     }
 
-    public function getDownloadCooldown(): string
+    public function getDownloadCooldown(): Cooldown
     {
         $node = $this->dom->find('div#dl span.red p')[0];
 
-        if (!$node) {
-            return '';
+        $cooldown = new Cooldown();
+
+        if ($node && preg_match('/you can wait ((\d+) hours ?)?((\d+) minutes ?)?((\d+) seconds)?/', $node->text, $matches)) {
+            $cooldown->setHours((int) $matches[2]);
+            $cooldown->setMinutes((int) $matches[4]);
+            $cooldown->setSeconds((int) $matches[6]);
         }
 
-        if (preg_match('/you can wait (.*) to launch a new download/', $node->text, $matches)) {
-            return $matches[1];
-        }
-
-        return '';
+        return $cooldown;
     }
 
     public function getFileError(): string

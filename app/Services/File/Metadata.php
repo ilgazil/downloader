@@ -9,7 +9,12 @@ class Metadata
     protected string $fileName = '';
     protected string $fileSize = '';
     protected string $fileError = '';
-    protected string $downloadCooldown = '';
+    protected Cooldown $cooldown;
+
+    public function __construct()
+    {
+        $this->cooldown = new Cooldown();
+    }
 
     public function setUrl(string $url): void
     {
@@ -61,13 +66,13 @@ class Metadata
         return $this->fileError;
     }
 
-    public function setDownloadCooldown(string $downloadCooldown): void
+    public function setCooldown(Cooldown $cooldown): void
     {
-        $this->downloadCooldown = $downloadCooldown;
+        $this->cooldown = $cooldown;
     }
 
-    public function getDownloadCooldown(): string
+    public function getCooldown(): Cooldown
     {
-        return $this->downloadCooldown;
+        return $this->cooldown;
     }
 }

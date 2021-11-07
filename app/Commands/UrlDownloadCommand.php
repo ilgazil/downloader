@@ -3,8 +3,6 @@
 namespace App\Commands;
 
 use App\Services\Driver\DriverService;
-use App\Services\Driver\Exceptions\NoMatchingDriverException;
-use App\Services\File\Exceptions\DownloadException;
 
 class UrlDownloadCommand extends AbstractCommand
 {
@@ -23,44 +21,49 @@ class UrlDownloadCommand extends AbstractCommand
         $this->driverService = $driverService;
     }
 
-    /**
-     * @throws DownloadException
-     * @throws NoMatchingDriverException
-     */
     protected function _handle()
     {
+        $result = 0;
         $count = count($this->argument('urls'));
 
         foreach ($this->argument('urls') as $index => $url) {
-            $download = $this->driverService
-                ->findByUrl($url)
-                ->getDownload($url);
+            try {
+                $download = $this->driverService
+                    ->findByUrl($url)
+                    ->getDownload($url);
 
-            $download->setTarget(
-                $this->option('target')
-                . DIRECTORY_SEPARATOR
-                . urldecode($download->getFileName())
-            );
+                $download->setTarget(
+                    $this->option('target')
+                    . DIRECTORY_SEPARATOR
+                    . urldecode($download->getFileName())
+                );
 
-            if ($count > 1) {
-                if ($index++) {
-                    $this->line('');
+                if ($count > 1) {
+                    if ($index++) {
+                        $this->line('');
+                    }
+
+                    $this->line("Download $index/$count");
                 }
 
-                $this->line("Download $index/$count");
+                $this->line('Host: ' . $download->getDriver()->getName());
+                $this->line('Name: ' . $download->getFileName());
+                $this->line('File: ' . $download->getTarget());
+                $this->line('Size: ' . $download->getFileSize());
+
+                $bar = $this->output->createProgressBar();
+                $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
+
+                $download->start($bar);
+            } catch (\Exception $exception) {
+                $this->line('Error with url: ' . $url);
+                $this->error($exception->getMessage());
+                $result = 1;
             }
 
-            $this->line('Host: ' . $download->getDriver()->getName());
-            $this->line('Name: ' . $download->getFileName());
-            $this->line('File: ' . $download->getTarget());
-            $this->line('Size: ' . $download->getFileSize());
-
-            $bar = $this->output->createProgressBar();
-            $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
-
-            $download->start($bar);
-
             $this->line('');
+
+            return $result;
         }
     }
 }

@@ -29,10 +29,10 @@ class UrlInfoCommand extends AbstractCommand
                 ->findByUrl($url)
                 ->getMetadata($url);
 
-            if ($metadata->getFileError()) {
+            if ($metadata->getCooldown()->getValue()) {
+                $state = (new ColoredStringWriter())->getColoredString($metadata->getCooldown()->getText() . ' cooldown', 'cyan');
+            } else if ($metadata->getFileError()) {
                 $state = (new ColoredStringWriter())->getColoredString($metadata->getFileError(), 'red');
-            } else if ($metadata->getDownloadCooldown()) {
-                $state = (new ColoredStringWriter())->getColoredString($metadata->getDownloadCooldown() . ' cooldown', 'cyan');
             } else {
                 $state = (new ColoredStringWriter())->getColoredString('Ready', 'green');
             }

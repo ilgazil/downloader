@@ -2,6 +2,7 @@
 
 namespace App\Services\Driver\Drivers;
 
+use App\Services\File\Cooldown;
 use PHPHtmlParser\Dom;
 
 class UnFichierParser
@@ -33,6 +34,18 @@ class UnFichierParser
         }
 
         return $node->text;
+    }
+
+    public function getCooldown(): Cooldown
+    {
+        $error = $this->getFileError();
+        $cooldown = new Cooldown();
+
+        if ($error && preg_match('/You must wait (\d+) minutes\.\.\./', $error, $matches)) {
+            $cooldown->setMinutes((int) $matches[1]);
+        }
+
+        return $cooldown;
     }
 
     public function getFileError(): string

@@ -69,7 +69,7 @@ class UpToBoxDriver extends DriverInterface
         $metadata->setFileName($parser->getFileName());
         $metadata->setFileSize($parser->getFileSize());
         $metadata->setFileError($parser->getFileError());
-        $metadata->setDownloadCooldown($parser->getDownloadCooldown());
+        $metadata->setCooldown($parser->getDownloadCooldown());
 
         return $metadata;
     }
@@ -106,7 +106,7 @@ class UpToBoxDriver extends DriverInterface
         }
 
         if ($parser->getDownloadCooldown()) {
-            throw new DownloadCooldownException($parser->getDownloadCooldown());
+            throw new DownloadCooldownException($parser->getDownloadCooldown()->getText());
         }
 
         $download = new Download();

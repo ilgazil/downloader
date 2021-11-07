@@ -60,6 +60,7 @@ class UnFichierDriver extends DriverInterface
         $metadata->setFileName($parser->getFileName());
         $metadata->setFileSize($parser->getFileSize());
         $metadata->setFileError($parser->getFileError());
+        $metadata->setCooldown($parser->getCooldown());
 
         return $metadata;
     }
