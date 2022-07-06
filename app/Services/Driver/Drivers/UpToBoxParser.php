@@ -70,7 +70,7 @@ class UpToBoxParser
 
     public function getPremiumDownloadLink(): string
     {
-        $node = $this->dom->find('div#dl div center a.big-button-green-flat')[0];
+        $node = $this->dom->find('div#dl div center a.big-button-green')[0];
 
         if (!$node) {
             return '';
@@ -81,7 +81,7 @@ class UpToBoxParser
 
     public function getAnonymousDownloadLink(): string
     {
-        $nodes = $this->dom->find('div#dl table.comparison-table a.big-button-green-flat')[1];
+        $nodes = $this->dom->find('div#dl table.comparison-table a.big-button-green')[1];
 
         if ($nodes) {
             return '';
