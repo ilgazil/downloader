@@ -61,7 +61,7 @@ class UpToBoxParser
 
         $message = trim(str_replace('&nbsp;', ' ', $node->text));
 
-        if (strpos($message, 'You need a PREMIUM account to download new files immediately without waiting') === 0) {
+        if (str_starts_with($message, 'You need a PREMIUM account to download new files immediately without waiting')) {
             return '';
         }
 
