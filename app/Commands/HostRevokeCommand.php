@@ -2,8 +2,8 @@
 
 namespace App\Commands;
 
+use App\Exceptions\DriverExceptions\NoMatchingDriverException;
 use App\Services\Driver\DriverService;
-use App\Services\Driver\Exceptions\NoMatchingDriverException;
 
 class HostRevokeCommand extends AbstractCommand
 {

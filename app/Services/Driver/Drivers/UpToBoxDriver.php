@@ -3,16 +3,15 @@
 namespace App\Services\Driver\Drivers;
 
 use anlutro\cURL\cURL;
-use App\Services\Driver\Exceptions\AuthException;
-use App\Services\Driver\Exceptions\DriverException;
-use PHPHtmlParser\Dom;
-
+use App\Exceptions\DriverExceptions\AuthException;
+use App\Exceptions\DriverExceptions\DriverException;
+use App\Exceptions\FileExceptions\DownloadCooldownException;
+use App\Exceptions\FileExceptions\DownloadException;
 use App\Models\Driver as DriverModel;
-use App\Services\File\Download;
-use App\Services\File\Exceptions\DownloadCooldownException;
-use App\Services\File\Exceptions\DownloadException;
-use App\Services\File\Metadata;
 use App\Services\Driver\DriverInterface;
+use App\Services\File\Download;
+use App\Services\File\Metadata;
+use PHPHtmlParser\Dom;
 use PHPHtmlParser\Exceptions\ChildNotFoundException;
 use PHPHtmlParser\Exceptions\CircularException;
 use PHPHtmlParser\Exceptions\ContentLengthException;
