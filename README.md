@@ -9,13 +9,21 @@
 ## Installation
 
 ```shell
-wget https://github.com/ilgazil/host-downloader/releases/download/untagged-301422919c680099f774/host-downloader.v0.1.0-beta.tar.gz
-tar -xvf host-downloader.v0.1.0-beta.tar.gz
-rm host-downloader.v0.1.0-beta.tar.gz
-sudo mv host-downloader /usr/bin
+git pull git@github.com:ilgazil/host-downloader.git
+cd host-downloader
+./host-downloader app:build
+sudo mv builds/host-downloader /usr/bin
+sudo chmod +x /usr/bin/host-downloader
 mkdir ~/.host-downloader
 touch ~/.host-downloader/database.sqlite
-host-downloader migrate
+/usr/bin/host-downloader migrate
+```
+
+I also suggest these aliases:
+
+```shell
+alias dl="host-downloader url:download"
+alias dli="host-downloader url:info"
 ```
 
 ## Usage
