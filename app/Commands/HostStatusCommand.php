@@ -2,9 +2,9 @@
 
 namespace App\Commands;
 
+use App\Exceptions\DriverExceptions\NoMatchingDriverException;
 use App\Models\Driver as DriverModel;
 use App\Services\Driver\DriverService;
-use App\Services\Driver\Exceptions\NoMatchingDriverException;
 use App\Services\Output\ColoredStringWriter;
 
 class HostStatusCommand extends AbstractCommand

@@ -3,9 +3,8 @@
 namespace App\Services\File;
 
 use anlutro\cURL\cURL;
-
+use App\Exceptions\FileExceptions\DownloadException;
 use App\Services\Driver\DriverInterface;
-use App\Services\File\Exceptions\DownloadException;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 class Download

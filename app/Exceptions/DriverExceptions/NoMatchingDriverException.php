@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Services\Driver\Exceptions;
+namespace App\Exceptions\DriverExceptions;
 
-class NoMatchingDriverException extends \Exception
+use App\Exceptions\AppException;
+
+class NoMatchingDriverException extends AppException
 {
     public function __construct(string $identifier)
     {

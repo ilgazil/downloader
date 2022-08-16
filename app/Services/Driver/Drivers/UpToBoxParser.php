@@ -81,13 +81,13 @@ class UpToBoxParser
 
     public function getAnonymousDownloadLink(): string
     {
-        $nodes = $this->dom->find('div#dl table.comparison-table a.big-button-green')[1];
+        $node = $this->dom->find('div#dl table.comparison-table a.big-button-green')[1];
 
-        if ($nodes) {
+        if (!$node) {
             return '';
         }
 
-        return $nodes->href;
+        return $node->href;
     }
 
     public function getAnonymousDownloadToken(): string

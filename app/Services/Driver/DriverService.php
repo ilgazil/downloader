@@ -2,7 +2,7 @@
 
 namespace App\Services\Driver;
 
-use App\Services\Driver\Exceptions\NoMatchingDriverException;
+use App\Exceptions\DriverExceptions\NoMatchingDriverException;
 
 class DriverService
 {

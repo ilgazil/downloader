@@ -2,10 +2,10 @@
 
 namespace App\Commands;
 
+use App\Exceptions\AppException;
 use App\Services\Driver\DriverService;
-use App\Services\Driver\Exceptions\NoMatchingDriverException;
-use App\Services\File\Exceptions\DownloadException;
 use App\Services\File\Renamer;
+use App\Services\Output\ColoredStringWriter;
 
 class UrlDownloadCommand extends AbstractCommand
 {
@@ -26,33 +26,11 @@ class UrlDownloadCommand extends AbstractCommand
         $this->driverService = $driverService;
     }
 
-    /**
-     * @throws DownloadException
-     * @throws NoMatchingDriverException
-     */
     protected function _handle()
     {
         $count = count($this->argument('urls'));
 
         foreach ($this->argument('urls') as $index => $url) {
-            $download = $this->driverService
-                ->findByUrl($url)
-                ->getDownload($url);
-
-            $name = urldecode($download->getFileName());
-
-            if ($this->option('name')) {
-                $name = (new Renamer())->rename($name, $this->option('name'));
-            } elseif ($this->option('auto-rename')) {
-                $name = (new Renamer())->autoRename($name);
-            }
-
-            $download->setTarget(
-                $this->option('target')
-                . DIRECTORY_SEPARATOR
-                . $name
-            );
-
             if ($count > 1) {
                 if ($index++) {
                     $this->line('');
@@ -61,17 +39,38 @@ class UrlDownloadCommand extends AbstractCommand
                 $this->line("Download $index/$count");
             }
 
-            $this->line('Host: ' . $download->getDriver()->getName());
-            $this->line('Name: ' . $download->getFileName());
-            $this->line('File: ' . $download->getTarget());
-            $this->line('Size: ' . $download->getFileSize());
+            try {
+                $download = $this->driverService
+                    ->findByUrl($url)
+                    ->getDownload($url);
 
-            $bar = $this->output->createProgressBar();
-            $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
+                $name = urldecode($download->getFileName());
 
-            $download->start($bar);
+                if ($this->option('name')) {
+                    $name = (new Renamer())->rename($name, $this->option('name'));
+                } elseif ($this->option('auto-rename')) {
+                    $name = (new Renamer())->autoRename($name);
+                }
 
-            $this->line('');
+                $download->setTarget(
+                    $this->option('target')
+                    . DIRECTORY_SEPARATOR
+                    . $name
+                );
+
+                $this->line('Host: ' . $download->getDriver()->getName());
+                $this->line('Name: ' . $download->getFileName());
+                $this->line('File: ' . $download->getTarget());
+                $this->line('Size: ' . $download->getFileSize());
+
+                $bar = $this->output->createProgressBar();
+                $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
+
+                $download->start($bar);
+                $this->line('');
+            } catch (AppException $exception) {
+                $this->line((new ColoredStringWriter())->getColoredString($exception->getMessage(), 'red'));
+            }
         }
     }
 }
