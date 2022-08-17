@@ -118,6 +118,8 @@ class Download
             ->setOption(CURLOPT_FILE, $target);
 
         if ($bar) {
+            $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
+
             $request
                 ->setOption(CURLOPT_NOPROGRESS, false)
                 ->setOption(
@@ -125,6 +127,10 @@ class Download
                     function($curlResource, int $expectedSize, int $downloadedSize) use($bar) {
                         if (!$expectedSize) {
                             return;
+                        }
+
+                        if ($expectedSize === $downloadedSize) {
+                            $bar->setFormat('[%bar%] Complete!');
                         }
 
                         $bar->setMaxSteps($expectedSize);

@@ -64,7 +64,6 @@ class UrlDownloadCommand extends AbstractCommand
                 $this->line('Size: ' . $download->getFileSize());
 
                 $bar = $this->output->createProgressBar();
-                $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
 
                 $download->start($bar);
                 $this->line('');
