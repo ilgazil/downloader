@@ -55,6 +55,7 @@ return [
 
     'providers' => [
         App\Providers\DriverServiceProvider::class,
+        App\Providers\ProgressBarProvider::class,
     ],
 
 ];
