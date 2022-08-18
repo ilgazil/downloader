@@ -3,7 +3,9 @@
 namespace App\Commands;
 
 use App\Exceptions\AppException;
+use App\Services\Builders\DownloadBuilder;
 use App\Services\Driver\DriverService;
+use App\Services\File\Download;
 use App\Services\File\Renamer;
 use App\Services\Output\ColoredStringWriter;
 
@@ -30,19 +32,21 @@ class UrlDownloadCommand extends AbstractCommand
     {
         $count = count($this->argument('urls'));
 
+        $downloadBuilder = new DownloadBuilder();
+        $downloadBuilder->setDriverService($this->driverService);
+        $downloadBuilder->setOutput($this->output);
+
         foreach ($this->argument('urls') as $index => $url) {
             if ($count > 1) {
                 if ($index++) {
                     $this->line('');
                 }
 
-                $this->line("Download $index/$count");
+                $this->line("Download $index/$count - $url");
             }
 
             try {
-                $download = $this->driverService
-                    ->findByUrl($url)
-                    ->getDownload($url);
+                $download = $downloadBuilder->build($url);
 
                 $name = urldecode($download->getFileName());
 
@@ -58,18 +62,17 @@ class UrlDownloadCommand extends AbstractCommand
                     . $name
                 );
 
-                $this->line('Host: ' . $download->getDriver()->getName());
-                $this->line('Name: ' . $download->getFileName());
-                $this->line('File: ' . $download->getTarget());
-                $this->line('Size: ' . $download->getFileSize());
-
-                $bar = $this->output->createProgressBar();
-
-                $download->start($bar);
-                $this->line('');
+                $download->start();
             } catch (AppException $exception) {
-                $this->line((new ColoredStringWriter())->getColoredString($exception->getMessage(), 'red'));
+                if (isset($download)) {
+                    $download->setError($exception->getMessage());
+                } else {
+                    $this->line("Error while processing $url:");
+                    $this->line((new ColoredStringWriter())->getColoredString($exception->getMessage(), 'red'));
+                }
             }
+
+            $this->line('');
         }
     }
 }

@@ -5,14 +5,16 @@ namespace App\Services\File;
 use anlutro\cURL\cURL;
 use App\Exceptions\FileExceptions\DownloadException;
 use App\Services\Driver\DriverInterface;
+use InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
+use UnexpectedValueException;
 
 class Download
 {
     static public string $PENDING = 'pending';
     static public string $RUNNING = 'running';
-    static public string $PAUSED = 'paused';
     static public string $DONE = 'done';
+    static public string $ERROR = 'error';
 
     protected string $url;
     protected string $target;
@@ -21,6 +23,7 @@ class Download
     protected string $fileName;
     protected string $fileSize;
     protected string $status;
+    protected ProgressBar $bar;
 
     public function __construct()
     {
@@ -97,10 +100,49 @@ class Download
         $this->fileSize = $fileSize;
     }
 
+    public function setProgressBar(ProgressBar $bar): void
+    {
+        $this->bar = $bar;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): void
+    {
+        $allowedStatuses = [self::$PENDING, self::$RUNNING, self::$DONE, self::$ERROR];
+
+        if (!in_array($status, $allowedStatuses)) {
+            throw new InvalidArgumentException(
+                'Download status can only be one of these: ' . join(', ', $allowedStatuses)
+            );
+        }
+
+        $this->status = $status;
+        $this?->bar->setFormat($status);
+
+        if ($status === self::$DONE) {
+            $this?->bar->finish();
+        }
+    }
+
+    public function setError(string $error): void
+    {
+        $this->setStatus(self::$ERROR);
+        $this->bar->setMessage($error, 'error');
+        $this?->bar->finish();
+    }
+
+    public function enqueue(): void {
+        $this->setStatus(self::$PENDING);
+    }
+
     /**
      * @throws DownloadException
      */
-    public function start(ProgressBar $bar = null): void
+    public function start(): void
     {
         $target = fopen($this->getTarget(), 'wb');
 
@@ -117,27 +159,22 @@ class Download
             ->setOption(CURLOPT_HEADER, false)
             ->setOption(CURLOPT_FILE, $target);
 
-        if ($bar) {
-            $bar->setFormat('[%bar%] %percent:3s%% - %remaining:6s% left');
+        $this->setStatus(self::$RUNNING);
 
-            $request
-                ->setOption(CURLOPT_NOPROGRESS, false)
-                ->setOption(
-                    CURLOPT_PROGRESSFUNCTION,
-                    function($curlResource, int $expectedSize, int $downloadedSize) use($bar) {
-                        if (!$expectedSize) {
-                            return;
-                        }
-
-                        if ($expectedSize === $downloadedSize) {
-                            $bar->setFormat('[%bar%] Complete!');
-                        }
-
-                        $bar->setMaxSteps($expectedSize);
-                        $bar->setProgress($downloadedSize);
+        $request
+            ->setOption(CURLOPT_NOPROGRESS, false)
+            ->setOption(
+                CURLOPT_PROGRESSFUNCTION,
+                function($curlResource, int $expectedSize, int $downloadedSize) {
+                    if (!$expectedSize) {
+                        return;
                     }
-                );
-        }
+
+                    throw new \App\Exceptions\AppException('Failure');
+                    $this->bar->setMaxSteps($expectedSize);
+                    $this->bar->setProgress($downloadedSize);
+                }
+            );
 
         foreach ($this->headers as $header => $value) {
             $request->setHeader($header, $value);
@@ -146,12 +183,12 @@ class Download
         // @todo Why this can be falsy thrown (with UpToBox files for instance)
         try {
             $request->send();
-        } catch (\UnexpectedValueException $e) {
-            if (!$e->getMessage() === 'Invalid response header') {
+        } catch (UnexpectedValueException $e) {
+            if ($e->getMessage() !== 'Invalid response header') {
                 throw $e;
             }
         }
 
-        $this->status = self::$DONE;
+        $this->setStatus(self::$DONE);
     }
 }
