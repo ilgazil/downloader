@@ -170,7 +170,6 @@ class Download
                         return;
                     }
 
-                    throw new \App\Exceptions\AppException('Failure');
                     $this->bar->setMaxSteps($expectedSize);
                     $this->bar->setProgress($downloadedSize);
                 }
