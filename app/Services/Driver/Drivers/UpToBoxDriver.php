@@ -216,6 +216,10 @@ class UpToBoxDriver extends DriverInterface
 
         $response = $request->send();
 
+        if ($response->statusCode === 301) {
+            return $this->getDom($response->info['redirect_url']);
+        }
+
         if ($response->statusCode !== 200) {
             throw new DriverException('Unable to reach ' . $url . ' (received ' . $response->statusText . ')');
         }
