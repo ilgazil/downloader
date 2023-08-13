@@ -24,7 +24,7 @@ class UpToBoxDriver extends DriverInterface
     static private string $ROOT_URL = 'https://uptobox.com/';
 
     public function match(string $url): bool {
-        return (bool) preg_match('/https?:\/\/uptobox\.com\/[\w\d]+/', $url);
+        return (bool) preg_match('/https?:\/\/uptobox\.\w{2,4}\/\w+/', $url);
     }
 
     public function getName(): string
