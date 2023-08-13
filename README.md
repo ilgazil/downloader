@@ -140,7 +140,7 @@ Size: 372.25 MB
 Retrieve and print premium link from a given url.
 
 ```shell
-host-downloader url:link [--target] ...urls
+host-downloader url:link ...urls
 ```
 
 * *url* - URLs to download from any host
