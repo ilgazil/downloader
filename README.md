@@ -135,6 +135,21 @@ Size: 372.25 MB
 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░]  63% - 2 mins left
 ```
 
+#### url:link
+
+Retrieve and print premium link from a given url.
+
+```shell
+host-downloader url:link [--target] ...urls
+```
+
+* *url* - URLs to download from any host
+
+```shell
+$ host-downloader url:download https://some-host.com/hashcode
+https://internal-storage.some-host.com/internal-hashcode/Some.file.name[1080p].mkv
+```
+
 ### Hidden commands
 
 The following commands are not listed while running the application summary because they deserve installation, updating or debug purpose.
