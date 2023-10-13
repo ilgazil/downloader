@@ -4,10 +4,9 @@ namespace App\Commands;
 
 use App\Exceptions\AppException;
 use App\Services\Builders\DownloadBuilder;
-use App\Services\Driver\DriverService;
-use App\Services\File\Download;
 use App\Services\File\Renamer;
 use App\Services\Output\ColoredStringWriter;
+use Ilgazil\LibDownload\Driver\DriverService;
 
 class UrlDownloadCommand extends AbstractCommand
 {
@@ -28,7 +27,7 @@ class UrlDownloadCommand extends AbstractCommand
         $this->driverService = $driverService;
     }
 
-    protected function _handle()
+    protected function _handle(): void
     {
         $count = count($this->argument('urls'));
 

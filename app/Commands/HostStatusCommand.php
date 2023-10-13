@@ -4,8 +4,8 @@ namespace App\Commands;
 
 use App\Exceptions\DriverExceptions\NoMatchingDriverException;
 use App\Models\Driver as DriverModel;
-use App\Services\Driver\DriverService;
 use App\Services\Output\ColoredStringWriter;
+use Ilgazil\LibDownload\Driver\DriverService;
 
 class HostStatusCommand extends AbstractCommand
 {

@@ -2,9 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\Driver\Drivers\UnFichierDriver;
-use App\Services\Driver\Drivers\UpToBoxDriver;
-use App\Services\Driver\DriverService;
+use Ilgazil\LibDownload\Driver\Drivers\UnFichier\UnFichierDriver;
+use Ilgazil\LibDownload\Driver\DriverService;
 use Illuminate\Support\ServiceProvider;
 
 class DriverServiceProvider extends ServiceProvider
@@ -12,12 +11,11 @@ class DriverServiceProvider extends ServiceProvider
     public function boot()
     {}
 
-    public function register()
+    public function register(): void
     {
         $this->app->singleton(DriverService::class, function () {
             $service = new DriverService();
 
-            $service->register(new UpToBoxDriver());
             $service->register(new UnFichierDriver());
 
             return $service;

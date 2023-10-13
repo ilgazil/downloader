@@ -2,8 +2,8 @@
 
 namespace App\Commands;
 
-use App\Services\Driver\DriverService;
 use App\Services\Output\ColoredStringWriter;
+use Ilgazil\LibDownload\Driver\DriverService;
 
 class UrlInfoCommand extends AbstractCommand
 {

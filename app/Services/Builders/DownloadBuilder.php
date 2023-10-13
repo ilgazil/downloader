@@ -3,8 +3,9 @@
 namespace App\Services\Builders;
 
 use App\Exceptions\DriverExceptions\NoMatchingDriverException;
-use App\Services\Driver\DriverService;
-use App\Services\File\Download;
+use App\Services\Output\ProgressBar;
+use Ilgazil\LibDownload\Driver\DriverService;
+use Ilgazil\LibDownload\File\Download;
 use Illuminate\Console\OutputStyle;
 
 class DownloadBuilder
@@ -48,7 +49,7 @@ class DownloadBuilder
             ' (' . $download->getFileSize() .')'
         );
 
-        $download->setProgressBar($bar);
+        $download->setProgress(new ProgressBar($bar));
 
         return $download;
     }

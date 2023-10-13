@@ -1,27 +1,33 @@
 {
-    "name": "laravel-zero/laravel-zero",
-    "description": "The Laravel Zero Framework.",
-    "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
-    "homepage": "https://laravel-zero.com",
+    "name": "ilgazil/downloader",
+    "description": "Host downloader",
+    "keywords": ["host", "downloader", "console", "cli"],
     "type": "project",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/laravel-zero/laravel-zero/issues",
-        "source": "https://github.com/laravel-zero/laravel-zero"
+        "issues": "https://github.com/ilgazil/downloader/issues",
+        "source": "https://github.com/ilgazil/downloader"
     },
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "Thomas Vivien",
+            "email": "thomas+github@vivien.cloud"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ilgazil/lib-download"
         }
     ],
     "require": {
         "php": "^8.0",
+        "ext-curl": "*",
         "anlutro/curl": "^1.5",
+        "ilgazil/lib-download": "dev-main",
         "illuminate/database": "^8.40",
         "laravel-zero/framework": "^8.8",
-        "paquettg/php-html-parser": "^3.1",
-        "ext-curl": "*"
+        "paquettg/php-html-parser": "^3.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -41,7 +47,10 @@
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": false
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

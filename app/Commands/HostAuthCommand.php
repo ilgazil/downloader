@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use App\Exceptions\DriverExceptions\NoMatchingDriverException;
-use App\Services\Driver\DriverService;
+use Ilgazil\LibDownload\Driver\DriverService;
 
 class HostAuthCommand extends AbstractCommand
 {

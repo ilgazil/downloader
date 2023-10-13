@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4286d27365d5369cfc1659c9370d45b6",
+    "content-hash": "3101befff4f783a8851656a0542bc3b2",
     "packages": [
         {
             "name": "anlutro/curl",
@@ -768,6 +768,44 @@
                 }
             ],
             "time": "2022-06-20T21:43:03+00:00"
+        },
+        {
+            "name": "ilgazil/lib-download",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ilgazil/lib-download.git",
+                "reference": "de464693c3971dfb48dd21e184860f921969b016"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ilgazil/lib-download/zipball/de464693c3971dfb48dd21e184860f921969b016",
+                "reference": "de464693c3971dfb48dd21e184860f921969b016",
+                "shasum": ""
+            },
+            "require": {
+                "anlutro/curl": "^1.5",
+                "ext-curl": "*",
+                "paquettg/php-html-parser": "^3.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ilgazil\\LibDownload\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Thomas Vivien",
+                    "email": "thomas+github@vivien.cloud"
+                }
+            ],
+            "support": {
+                "source": "https://github.com/ilgazil/lib-download/tree/main",
+                "issues": "https://github.com/ilgazil/lib-download/issues"
+            },
+            "time": "2023-10-13T19:38:48+00:00"
         },
         {
             "name": "illuminate/bus",
@@ -7003,7 +7041,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "ilgazil/lib-download": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -7011,5 +7051,5 @@
         "ext-curl": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

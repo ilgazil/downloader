@@ -4,10 +4,8 @@ namespace App\Commands;
 
 use App\Exceptions\AppException;
 use App\Services\Builders\DownloadBuilder;
-use App\Services\Driver\DriverService;
-use App\Services\File\Download;
-use App\Services\File\Renamer;
 use App\Services\Output\ColoredStringWriter;
+use Ilgazil\LibDownload\Driver\DriverService;
 
 class UrlLinkCommand extends AbstractCommand
 {
@@ -25,7 +23,7 @@ class UrlLinkCommand extends AbstractCommand
         $this->driverService = $driverService;
     }
 
-    protected function _handle()
+    protected function _handle(): void
     {
         $urls = [];
         $hasError = false;

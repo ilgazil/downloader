@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\File\Download;
 use App\Services\Output\ColoredStringWriter;
+use Ilgazil\LibDownload\File\Download;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Console\Helper\ProgressBar;
 
