@@ -11,6 +11,7 @@
 ```shell
 git pull git@github.com:ilgazil/host-downloader.git
 cd host-downloader
+composer install
 ./host-downloader app:build
 sudo mv builds/host-downloader /usr/bin
 sudo chmod +x /usr/bin/host-downloader
