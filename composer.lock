@@ -775,12 +775,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ilgazil/lib-download.git",
-                "reference": "de464693c3971dfb48dd21e184860f921969b016"
+                "reference": "51d17cec4791423c39522ab855345e789ed49f4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ilgazil/lib-download/zipball/de464693c3971dfb48dd21e184860f921969b016",
-                "reference": "de464693c3971dfb48dd21e184860f921969b016",
+                "url": "https://api.github.com/repos/ilgazil/lib-download/zipball/51d17cec4791423c39522ab855345e789ed49f4a",
+                "reference": "51d17cec4791423c39522ab855345e789ed49f4a",
                 "shasum": ""
             },
             "require": {
@@ -805,7 +805,7 @@
                 "source": "https://github.com/ilgazil/lib-download/tree/main",
                 "issues": "https://github.com/ilgazil/lib-download/issues"
             },
-            "time": "2023-10-13T19:38:48+00:00"
+            "time": "2023-10-14T11:23:03+00:00"
         },
         {
             "name": "illuminate/bus",

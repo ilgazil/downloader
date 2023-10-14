@@ -12,7 +12,7 @@ class CreateDriversTable extends Migration
             $table->string('name')->unique();
             $table->string('login');
             $table->string('password');
-            $table->string('cookie');
+            $table->string('vector');
         });
     }
 

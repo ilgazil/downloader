@@ -50,11 +50,19 @@ class ColoredStringWriter {
         return $coloredString;
     }
 
-    public function getForegroundColors(): array {
-        return array_keys($this->foregroundColors);
+    public function green(string $string): string {
+        return $this->getColoredString($string, 'green');
     }
 
-    public function getBackgroundColors(): array {
-        return array_keys($this->backgroundColors);
+    public function cyan(string $string): string {
+        return $this->getColoredString($string, 'cyan');
+    }
+
+    public function yellow(string $string): string {
+        return $this->getColoredString($string, 'yellow');
+    }
+
+    public function red(string $string): string {
+        return $this->getColoredString($string, 'red');
     }
 }

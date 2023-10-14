@@ -2,13 +2,14 @@
 
 namespace App\Commands;
 
-use App\Exceptions\AppException;
 use App\Services\Builders\DownloadBuilder;
 use App\Services\File\Renamer;
 use App\Services\Output\ColoredStringWriter;
+use Exception;
 use Ilgazil\LibDownload\Driver\DriverService;
+use LaravelZero\Framework\Commands\Command;
 
-class UrlDownloadCommand extends AbstractCommand
+class UrlDownloadCommand extends Command
 {
     protected $signature = 'url:download
         {urls* : the urls to download from any host}
@@ -27,7 +28,7 @@ class UrlDownloadCommand extends AbstractCommand
         $this->driverService = $driverService;
     }
 
-    protected function _handle(): void
+    protected function handle(): int
     {
         $count = count($this->argument('urls'));
 
@@ -62,16 +63,19 @@ class UrlDownloadCommand extends AbstractCommand
                 );
 
                 $download->start();
-            } catch (AppException $exception) {
+            } catch (Exception $exception) {
+                $hasError = true;
                 if (isset($download)) {
                     $download->setError($exception->getMessage());
                 } else {
                     $this->line("Error while processing $url:");
-                    $this->line((new ColoredStringWriter())->getColoredString($exception->getMessage(), 'red'));
+                    $this->line((new ColoredStringWriter())->red($exception->getMessage()));
                 }
             }
 
             $this->line('');
         }
+
+        return empty($hasError) ? self::SUCCESS : self::FAILURE;
     }
 }

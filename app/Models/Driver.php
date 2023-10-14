@@ -15,6 +15,6 @@ class Driver extends Model
     protected $attributes = [
         'login' => '',
         'password' => '',
-        'cookie' => '',
+        'vector' => '',
     ];
 }

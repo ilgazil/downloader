@@ -2,12 +2,12 @@
 
 namespace App\Commands;
 
-use App\Exceptions\DriverExceptions\NoMatchingDriverException;
 use App\Models\Driver as DriverModel;
 use App\Services\Output\ColoredStringWriter;
 use Ilgazil\LibDownload\Driver\DriverService;
+use LaravelZero\Framework\Commands\Command;
 
-class HostStatusCommand extends AbstractCommand
+class HostStatusCommand extends Command
 {
     protected $signature = 'host:status {driver=all : driver name}';
 
@@ -22,10 +22,7 @@ class HostStatusCommand extends AbstractCommand
         $this->driverService = $driverService;
     }
 
-    /**
-     * @throws NoMatchingDriverException
-     */
-    protected function _handle()
+    protected function handle(): int
     {
         $messages = [];
         $drivers = $this->argument('driver') === 'all'
@@ -38,13 +35,15 @@ class HostStatusCommand extends AbstractCommand
             $model = DriverModel::find($driver->getName());
 
             $messages[] = 'Host: ' . $driver->getName();
-            $messages[] = 'Login: ' . (($model && $model->login)
-                ? $writer->getColoredString('Configured', 'green')
-                : $writer->getColoredString('Not configured', 'yellow') . PHP_EOL);
+            $messages[] = 'Login: ' . $model?->login
+                ? $writer->green('Configured')
+                : $writer->yellow('Not configured') . PHP_EOL;
         }
 
         foreach ($messages as $message) {
             $this->line($message);
         }
+
+        return self::SUCCESS;
     }
 }

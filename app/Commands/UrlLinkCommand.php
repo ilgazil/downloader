@@ -2,12 +2,13 @@
 
 namespace App\Commands;
 
-use App\Exceptions\AppException;
 use App\Services\Builders\DownloadBuilder;
 use App\Services\Output\ColoredStringWriter;
+use Exception;
 use Ilgazil\LibDownload\Driver\DriverService;
+use LaravelZero\Framework\Commands\Command;
 
-class UrlLinkCommand extends AbstractCommand
+class UrlLinkCommand extends Command
 {
     protected $signature = 'url:link
         {urls* : the urls to download from any host}';
@@ -23,7 +24,7 @@ class UrlLinkCommand extends AbstractCommand
         $this->driverService = $driverService;
     }
 
-    protected function _handle(): void
+    protected function handle(): int
     {
         $urls = [];
         $hasError = false;
@@ -34,30 +35,29 @@ class UrlLinkCommand extends AbstractCommand
 
         $input = explode(' ', $this->argument('urls')[0]);
 
-        foreach ($input as $index => $url) {
+        foreach ($input as $url) {
             try {
                 $download = $downloadBuilder->build($url);
                 $urls[] = $download->getUrl();
-            } catch (AppException $exception) {
+            } catch (Exception $exception) {
                 $hasError = true;
                 $this->line("Error while processing $url:");
-                $this->line((new ColoredStringWriter())->getColoredString($exception->getMessage(), 'red'));
+                $this->line((new ColoredStringWriter())->red($exception->getMessage()));
             }
         }
 
         if (empty($urls)) {
-            return;
+            return $hasError ? self::FAILURE : self::INVALID;
         }
 
         if ($hasError) {
-            $this->line(
-                (new ColoredStringWriter())
-                    ->getColoredString('Url that have generated errors are not listed below', 'red'),
-            );
+            $this->line((new ColoredStringWriter())->red('Url that have generated errors are not listed below'));
         }
 
         foreach ($urls as $url) {
             $this->line($url);
         }
+
+        return self::SUCCESS;
     }
 }
