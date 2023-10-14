@@ -28,7 +28,7 @@ class UrlDownloadCommand extends Command
         $this->driverService = $driverService;
     }
 
-    protected function handle(): int
+    public function handle(): int
     {
         $count = count($this->argument('urls'));
 

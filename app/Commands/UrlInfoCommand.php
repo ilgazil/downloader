@@ -22,7 +22,7 @@ class UrlInfoCommand extends Command
         $this->driverService = $driverService;
     }
 
-    protected function handle(): int
+    public function handle(): int
     {
         $urls = $this->argument('urls');
 

@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Driver;
+use Exception;
+use Ilgazil\LibDownload\Authenticators\ApiKeyAuthenticator;
 use Ilgazil\LibDownload\Driver\Drivers\UnFichier\UnFichierDriver;
 use Ilgazil\LibDownload\Driver\DriverService;
-use Ilgazil\LibDownload\Session\Credentials;
 use Illuminate\Support\ServiceProvider;
 
 class DriverServiceProvider extends ServiceProvider
@@ -28,13 +29,13 @@ class DriverServiceProvider extends ServiceProvider
     {
         $driver = new UnFichierDriver();
 
-        $model = Driver::find($driver->getName());
+        try {
+            $model = Driver::find($driver->getName());
 
-        if ($model) {
-            $driver->getSession()->setCredentials(
-                (new Credentials())->setLogin($model->login)->setPassword($model->password),
-            );
-            $driver->getSession()->getVector()->setValue($model->vector);
+            if ($model) {
+                $driver->setAuthenticator(new ApiKeyAuthenticator($model->auth));
+            }
+        } catch (Exception $exception) {
         }
 
         $service->register($driver);

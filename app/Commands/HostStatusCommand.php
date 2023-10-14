@@ -22,7 +22,7 @@ class HostStatusCommand extends Command
         $this->driverService = $driverService;
     }
 
-    protected function handle(): int
+    public function handle(): int
     {
         $messages = [];
         $drivers = $this->argument('driver') === 'all'
@@ -35,9 +35,9 @@ class HostStatusCommand extends Command
             $model = DriverModel::find($driver->getName());
 
             $messages[] = 'Host: ' . $driver->getName();
-            $messages[] = 'Login: ' . $model?->login
-                ? $writer->green('Configured')
-                : $writer->yellow('Not configured') . PHP_EOL;
+            $messages[] = 'Authenticator: ' .
+                ($model?->auth ? $writer->green('Configured') : $writer->yellow('Not configured')) .
+                PHP_EOL;
         }
 
         foreach ($messages as $message) {

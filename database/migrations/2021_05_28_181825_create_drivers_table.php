@@ -6,17 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateDriversTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->string('name')->unique();
-            $table->string('login');
-            $table->string('password');
-            $table->string('vector');
+            $table->string('auth');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('drivers');
     }

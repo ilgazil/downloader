@@ -13,8 +13,6 @@ class Driver extends Model
     public $timestamps = false;
 
     protected $attributes = [
-        'login' => '',
-        'password' => '',
-        'vector' => '',
+        'auth' => '',
     ];
 }

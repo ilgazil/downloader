@@ -11,8 +11,7 @@ class HostAuthCommand extends Command
 {
     protected $signature = 'host:auth
         {driver : driver name}
-        {login : credential login}
-        {password : credential password}';
+        {auth : auth key, depending on driver authentication method}';
 
     protected $description = 'Authenticate on a host';
 
@@ -25,34 +24,28 @@ class HostAuthCommand extends Command
         $this->driverService = $driverService;
     }
 
-    protected function handle(): int
+    public function handle(): int
     {
         try {
             $driver = $this->driverService->findByName($this->argument('driver'));
 
-            $driver->login(
-                $this->argument('login'),
-                $this->argument('password'),
-            );
+            $model = Driver::find($driver->getName());
 
-            $model = Driver::findOr(
-                $this->argument('driver'),
-                function () {
-                    $driver = new Driver();
-                    $driver->name = $this->argument('driver');
-                },
-            );
+            if (!$model) {
+                $model = new Driver();
+                $model->name = $driver->getName();
+            }
 
-            $model->login = $this->argument('login');
-            $model->password = $this->argument('password');
-            $model->vector = $driver->getSession()->getVector()->getValue();
+            $model->auth = $this->argument('auth');
+
+            $model->save();
         } catch (Exception $exception) {
-            $this->line('Unable to connected to ' . $this->argument('driver') . ': ' . $exception->getMessage());
+            $this->line('Unable to save authenticator for ' . $this->argument('driver') . ': ' . $exception->getMessage());
 
             return self::FAILURE;
         }
 
-        $this->line('Connected to ' . $driver->getName());
+        $this->line('Authenticator saved for ' . $driver->getName());
 
         return self::SUCCESS;
     }

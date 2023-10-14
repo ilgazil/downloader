@@ -24,7 +24,7 @@ class UrlLinkCommand extends Command
         $this->driverService = $driverService;
     }
 
-    protected function handle(): int
+    public function handle(): int
     {
         $urls = [];
         $hasError = false;
