@@ -39,31 +39,15 @@ Connects to your host account using your credentials. It stores your cookies to 
 Note it will also save your credentials in order to reconnect in case of outdated cookie. Stored data remain only in your local database.
 
 ```shell
-host-downloader host:auth host login password
+host-downloader host:auth host auth
 ```
 
 * *host* - Host ID, see [supported hosts](#supported-hosts)
-* *login* - Host user login
-* *password* - Host user password
+* *auth* - Auth key, depending on driver authentication method, see [supported hosts](#supported-hosts)
 
 ```shell
 $ host-downloader host:auth SomeHost user_name p455w0rd
 Connected to SomeHost
-```
-
-#### host:revoke
-
-Revoke your host cookies. It also will remove your credentials from local database.
-
-```shell
-host-downloader host:revoke host
-```
-
-* *host* - Host ID, see [supported hosts](#supported-hosts)
-
-```shell
-$ host-downloader host:revoke SomeHost
-Disconnected of SomeHost
 ```
 
 #### host:status
@@ -162,6 +146,6 @@ The following commands are not listed while running the application summary beca
 
 ## Supported hosts
 
-| Host name     | Handle premium |
-| ------------- |:--------------:|
-| UpToBox       | ✔ |
+| Host name | Handle premium | Auth method |
+|-----------|:--------------:|:-----------:|
+| 1fichier  |       ✔        |   API key   |
